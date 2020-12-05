@@ -1,4 +1,4 @@
-Scriptname SV88:MarInt00_TurretScript extends Actor
+Scriptname SV88:MarInt00_TurretScript extends workshopobjectactorscript
 
 Import SV88:SamutzLibrary
 
