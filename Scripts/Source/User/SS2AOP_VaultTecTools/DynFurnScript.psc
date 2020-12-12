@@ -1,7 +1,5 @@
 Scriptname SS2AOP_VaultTecTools:DynFurnScript extends ObjectReference
 
-Import SS2AOP_VaultTecTools:SamutzLibrary
-
 Group CenterPiece
 	FormList Property flCenterPieces Auto Const
 	float Property fCenterPieceOffsetX = 0.0 Auto Const
@@ -39,7 +37,7 @@ ObjectReference CenterPieceRef = none
 ObjectReference navcutRef = none
 
 Function SpawnFood(int iMarkerNumber)
-	if Self.IsEnabled() && !Self.IsDeleted() && !Self.IsDestroyed()
+	if IsEnabled() && !IsDeleted() && !IsDestroyed()
 		int i = FoodSpawnStructs.FindStruct("iMarkerNumber", iMarkerNumber)
 		if i > -1 && FoodSpawnStructs[i].flFoodToSpawn.GetSize() > 0
 			int j = FoodSpawnRefs.FindStruct("iMarkerNumber", iMarkerNumber)
@@ -56,7 +54,7 @@ Function SpawnFood(int iMarkerNumber)
 EndFunction
 
 Function SpawnCenterPiece()
-	if Self.IsEnabled() && !Self.IsDeleted() && !Self.IsDestroyed()
+	if IsEnabled() && !IsDeleted() && !IsDestroyed()
 		if flCenterPieces && flCenterPieces.GetSize() > 0 && !(CenterPieceRef as bool) 
 			int formIndex = Utility.RandomInt(0, flCenterPieces.GetSize() - 1)
 			Form formToSpawn = flCenterPieces.GetAt(formIndex)
@@ -126,8 +124,8 @@ Function CheckIfNeedsFood()
 	int j = 0
 	while i < FoodSpawnStructs.length
 		j = FoodSpawnRefs.FindStruct("iMarkerNumber", FoodSpawnStructs[i].iMarkerNumber)
-		if Self.IsFurnitureMarkerInUse(FoodSpawnStructs[i].iMarkerNumber, true) && !(FoodSpawnRefs[j].refFoodSpawn as bool)
-			Self.SpawnFood(FoodSpawnStructs[i].iMarkerNumber)
+		if IsFurnitureMarkerInUse(FoodSpawnStructs[i].iMarkerNumber, true) && !(FoodSpawnRefs[j].refFoodSpawn as bool)
+			SpawnFood(FoodSpawnStructs[i].iMarkerNumber)
 		endIf
 		i += 1
 	endWhile
@@ -140,9 +138,9 @@ Function CheckIfNeedsFoodCleaned()
 		bool bInUse = true
 		while bInUse && retry < 15
 			Utility.Wait(1)
-			bInUse = Self.IsFurnitureMarkerInUse(FoodSpawnStructs[i].iMarkerNumber, true)
+			bInUse = IsFurnitureMarkerInUse(FoodSpawnStructs[i].iMarkerNumber, true)
 			if !bInUse
-				Self.RemoveFoodSpawn(FoodSpawnStructs[i].iMarkerNumber)
+				RemoveFoodSpawn(FoodSpawnStructs[i].iMarkerNumber)
 			endIf
 			retry += 1
 		endWhile
@@ -151,24 +149,23 @@ Function CheckIfNeedsFoodCleaned()
 EndFunction
 
 Function SpawnNavcut()
-	if Self.IsEnabled() && !Self.IsDeleted() && !Self.IsDestroyed()
+	if IsEnabled() && !IsDeleted() && !IsDestroyed()
 		if !(navcutRef as bool) && (NavcutStatic as bool)
 			navcutRef = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(Self, NavcutStatic)
 			navcutRef.Enable(false)
 			navcutRef.SetLinkedRef((Self as ObjectReference), kwLinkParent)
-			;debug.notification("navcut spawned")
 		endIf
 	endIf
 EndFunction
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
-	Self.SpawnCenterPiece()
-	Self.SpawnNavcut()
+	SpawnCenterPiece()
+	SpawnNavcut()
 EndFunction
 
 Event OnActivate(ObjectReference akActionRef)
-	Self.CheckIfNeedsFood()
+	CheckIfNeedsFood()
 EndEvent
 
 ; Furniture remains marked as in-use until exit animation finishes, so this will retry up to 15 seconds to remove the food
@@ -177,44 +174,34 @@ Event OnExitFurniture(ObjectReference akReference)
 EndEvent
 
 Event OnLoad()
-	;Self.SpawnCenterPiece()
-	;Self.Cleanup(false, true)
-	if Self.IsEnabled() && !Self.IsDeleted() && !Self.IsDestroyed()
-		Self.CheckIfNeedsFood()
+	if IsEnabled() && !IsDeleted() && !IsDestroyed()
+		CheckIfNeedsFood()
 		CallFunctionNoWait("CheckIfNeedsFoodCleaned", new var[0])
 	endIf
 EndEvent
 
 Event OnWorkshopObjectPlaced(ObjectReference akReference)
-	Self.Cleanup(true, true, true)
-	Self.SpawnCenterPiece()
-	Self.SpawnNavcut()
+	Cleanup(true, true, true)
+	SpawnCenterPiece()
+	SpawnNavcut()
 EndEvent
 
 Event OnWorkshopObjectMoved(ObjectReference akReference)
-	Self.Cleanup(true, true, true)
-	Self.SpawnCenterPiece()
-	Self.SpawnNavcut()
+	Cleanup(true, true, true)
+	SpawnCenterPiece()
+	SpawnNavcut()
 EndEvent
 
 Event OnWorkshopObjectDestroyed(ObjectReference akReference)
-	Self.Cleanup(true, true, true)
+	Cleanup(true, true, true)
 EndEvent
 
 Event OnWorkshopObjectGrabbed(ObjectReference akReference)
-	Self.Cleanup(true, true, true)
-EndEvent
-
-Event OnUnload()
-	;Self.Cleanup(false, true)
-EndEvent
-
-Event OnReset()
-	;Self.Cleanup(false, true)
+	Cleanup(true, true, true)
 EndEvent
 
 Function Delete()
-	Self.Cleanup(true, true, true)
+	Cleanup(true, true, true)
 	Parent.Delete()
 EndFunction
 

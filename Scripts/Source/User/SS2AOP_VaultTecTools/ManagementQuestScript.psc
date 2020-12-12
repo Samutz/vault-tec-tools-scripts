@@ -16,7 +16,6 @@ Group Controllers
 	GlobalVariable Property CurrentVersion Auto Const Mandatory
 	{ Holds the current version of the files, used with local property InstalledVersion to determine what changes to apply }
 	WorkshopFramework:Library:WorkshopMenuInjectionQuest Property SettlementMenuInjector Auto Const Mandatory
-	SS2AOP_VaultTecTools:SummonManagerQuestScript Property SummonManager Auto Const Mandatory
 	WorkshopParentScript Property WorkshopParent Auto Const Mandatory
 	Message Property InstallVersionMessage Auto Const Mandatory
 	FormList Property VaultSuitsFormList Auto Const
@@ -53,8 +52,6 @@ Group Mechanist_SpecialSnowflake
 EndGroup
 
 Group Settings
-	GlobalVariable Property Settings_UseCityPlannerDoorSettingGlobal Auto Const
-	GlobalVariable Property Settings_OpenDoorsInWorkshopModeGlobal Auto Const
 	GlobalVariable Property Settings_MarInt00_AutomateGearDoor Auto Const
 	GlobalVariable Property Settings_RecInt01_NoLock Auto Const
 	GlobalVariable Property Settings_RecInt01_UseCWSS Auto Const
@@ -138,32 +135,32 @@ Event OnQuestInit()
 	Debug.OpenUserLog(LogName)
 	Debug.TraceUser(LogName, "ManagementQuest Started")
 	PlayerRef = Game.GetPlayer()
-	Self.CheckForSSInstall()
+	CheckForSSInstall()
 	RegisterForRemoteEvent(PlayerRef, "OnPlayerLoadGame")
 EndEvent
 
 Event Actor.OnPlayerLoadGame(Actor akActorRef)
 	Debug.OpenUserLog(LogName)
-	Self.CheckForSSInstall()
+	CheckForSSInstall()
 EndEvent
 
 Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
     if asMenuName == "PipboyMenu"
         if !abOpening
-			Self.CheckForSSInstall()
+			CheckForSSInstall()
         endif
     endif
 endEvent 
 
 Event RefCollectionAlias.OnCellLoad(RefCollectionAlias akSenderAlias, ObjectReference akSenderRef)
 	if akSenderRef.IsOwnedBy(PlayerRef)
-		Self.StartTimer(3, 0)
+		StartTimer(3, 0)
 	endIf
 EndEvent
 
 Event OnTimer(int iTimerId)
 	if iTimerId == 0
-		Self.CheckMenuInjector()
+		CheckMenuInjector()
 	endIf
 EndEvent
 
@@ -183,30 +180,30 @@ EndFunction
 Function Startup()
 	bEditLock = false ; Make sure this never gets stuck permanently
 	
-	Self.CheckPlugins()
+	CheckPlugins()
 	
 	if InstalledVersion < CurrentVersion.GetValue()
 		Debug.TraceUser(LogName, "Starting upgrade from "+InstalledVersion+" to "+CurrentVersion.GetValue())
-		Self.InstallModChanges()
+		InstallModChanges()
 		
 		; always refresh injections on upgrade incase of changes
-		Self.ApplyAVs()
-		Self.InjectDLCObjects()
+		ApplyAVs()
+		InjectDLCObjects()
 		Debug.TraceUser(LogName, "Completed upgrade to "+CurrentVersion.GetValue())
 	elseif bPluginRefresh
 		Debug.TraceUser(LogName, "Plugin install status has changed, refreshing injections")
-		Self.ApplyAVs()
-		Self.InjectDLCObjects()
+		ApplyAVs()
+		InjectDLCObjects()
 		Debug.TraceUser(LogName, "Finished refreshing injections")
 	endif
 	
 	bPluginRefresh = false
 	
 	; always check this because quest may be completed at any time
-	Self.CheckChanceNoneQuests()
+	CheckChanceNoneQuests()
 	
 	; reload door manager in case loading in to a workshop
-	Self.CheckMenuInjector()
+	CheckMenuInjector()
 	UnregisterForRemoteEvent(WorkshopParent.WorkshopsCollection, "OnCellLoad") ; redo this on every save load incase of new workshops
 	RegisterForRemoteEvent(WorkshopParent.WorkshopsCollection, "OnCellLoad")
 EndFunction
@@ -240,10 +237,10 @@ EndFunction
 Function RefreshAll()
 	; mostly for command line use
 	Debug.TraceUser(LogName, "RefreshAll() called")
-	Self.CheckPlugins()
-	Self.ApplyAVs()
-	Self.CheckChanceNoneQuests()
-	Self.InjectDLCObjects()
+	CheckPlugins()
+	ApplyAVs()
+	CheckChanceNoneQuests()
+	InjectDLCObjects()
 EndFunction
 
 Function ApplyAVs()
@@ -357,24 +354,16 @@ EndFunction
 ;/
 	HOLOTAPE FUNCTIONS
 /;
-Function ToggleSettings_UseCityPlannerDoorSetting()
-	Self.ToggleGlobal(Settings_UseCityPlannerDoorSettingGlobal)
-EndFunction
-
-Function ToggleSettings_OpenDoorsInWorkshopMode()
-	Self.ToggleGlobal(Settings_OpenDoorsInWorkshopModeGlobal)
-EndFunction
-
 Function ToggleSettings_MarInt00_AutomateGearDoor()
-	Self.ToggleGlobal(Settings_MarInt00_AutomateGearDoor)
+	ToggleGlobal(Settings_MarInt00_AutomateGearDoor)
 EndFunction
 
 Function ToggleSettings_RecInt01_NoLock()
-	Self.ToggleGlobal(Settings_RecInt01_NoLock)
+	ToggleGlobal(Settings_RecInt01_NoLock)
 EndFunction
 
 Function ToggleSettings_RecInt01_UseCWSS()
-	Self.ToggleGlobal(Settings_RecInt01_UseCWSS)
+	ToggleGlobal(Settings_RecInt01_UseCWSS)
 EndFunction
 
 Function ToggleGlobal(GlobalVariable GlobalVar)

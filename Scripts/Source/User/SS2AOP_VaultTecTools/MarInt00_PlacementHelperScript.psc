@@ -1,17 +1,15 @@
 Scriptname SS2AOP_VaultTecTools:MarInt00_PlacementHelperScript extends ObjectReference
 
-Import SS2AOP_VaultTecTools:SamutzLibrary
-
 WorkshopFramework:Library:DataStructures:WorldObject Property PlotWorldObject Auto Const Mandatory
 simsettlementsv2:weapons:buildingplan Property AssignedPlan Auto Const Mandatory
 
 Event OnWorkshopObjectPlaced(ObjectReference akReference)
-	ObjectReference plotRef = WorkshopFramework:WSFW_API.CreateSettlementObject(PlotWorldObject, akReference as WorkshopScript, Self)
+	SimSettlementsV2:ObjectReferences:SimPlot plotRef = WorkshopFramework:WSFW_API.CreateSettlementObject(PlotWorldObject, akReference as WorkshopScript, Self) as SimSettlementsV2:ObjectReferences:SimPlot
 	if plotRef
-		(plotRef as SimSettlementsV2:ObjectReferences:SimPlot).AssignBuildingPlan(AssignedPlan)
-		(plotRef as SimSettlementsV2:ObjectReferences:SimPlot).bPlayerSelectedPlanManually = true
+		plotRef.AssignBuildingPlan(AssignedPlan)
+		plotRef.bPlayerSelectedPlanManually = true
 	endIf
-	Self.Disable(false)
-	Self.Delete()
+	Disable(false)
+	Delete()
 EndEvent
 

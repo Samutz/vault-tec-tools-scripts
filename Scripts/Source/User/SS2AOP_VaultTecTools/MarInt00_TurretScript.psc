@@ -1,7 +1,5 @@
 Scriptname SS2AOP_VaultTecTools:MarInt00_TurretScript extends workshopobjectactorscript
 
-Import SS2AOP_VaultTecTools:SamutzLibrary
-
 Keyword Property kwDoor Auto Const Mandatory
 Keyword Property kgSim_PlotSpawned Auto Const Mandatory
 GlobalVariable Property AutomateDoorSetting Auto Const Mandatory
@@ -9,17 +7,29 @@ GlobalVariable Property AutomateDoorSetting Auto Const Mandatory
 SS2AOP_VaultTecTools:MarInt00_GearDoorScript aDoorRef = none
 
 Bool bIsMoved = false
+Float[] OriginalPosition = none
+Float[] OriginalRotation = none
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
-	Self.CallFunctionNoWait("AsyncEnable", none)
+	CallFunctionNoWait("AsyncEnable", none)
 EndFunction
 
 Function AsyncEnable()
-	if !Self.IsDeleted() && !Self.IsDestroyed() 
+	OriginalPosition = new Float[3]
+	OriginalRotation = new Float[3]
+	
+	if !IsDeleted() && !IsDestroyed()
+		OriginalPosition[0] = GetPositionX()
+		OriginalPosition[1] = GetPositionY()
+		OriginalPosition[2] = GetPositionZ()
+		OriginalRotation[0] = GetAngleX()
+		OriginalRotation[1] = GetAngleY()
+		OriginalRotation[2] = GetAngleZ()
+	
 		int retry = 0
 		while !bIsMoved && retry < 5
-			bIsMoved = Self.FixRotation()
+			bIsMoved = FixRotation()
 			retry += 5
 		endWhile
 		
@@ -34,7 +44,7 @@ Function AsyncEnable()
 			i += 1
 		endWhile
 		
-		CheckCombatState(Self.GetCombatState())
+		CheckCombatState(GetCombatState())
 	endIf
 EndFunction
 
@@ -44,17 +54,12 @@ Function Delete()
 	Parent.Delete()
 EndFunction
 
-Event OnCellLoad()
-	bIsMoved = false
-	Self.FixRotation()
-EndEvent
-
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
-	if (aDoorRef as bool) && Self.IsEnabled() && !Self.IsDeleted() && !Self.IsDestroyed() 
+	if (aDoorRef as bool) && IsEnabled() && !IsDeleted() && !IsDestroyed() 
 		CheckCombatState(aeCombatState)
 		; check again after 10 secs in case combatstate changed during door animation
 		Utility.Wait(10)
-		CheckCombatState(Self.GetCombatState())
+		CheckCombatState(GetCombatState())
 	endIf
 EndEvent
 
@@ -69,19 +74,10 @@ Function CheckCombatState(int aeCombatState)
 EndFunction
 
 bool Function FixRotation()
-	if(Self.is3dLoaded() && Self.isEnabled())
-		Utility.Wait(3)
-		Float[] CurrentPosition = new Float[3]
-		Float[] CurrentRotation = new Float[3]
-							
-		CurrentPosition[0] = Self.GetPositionX()
-		CurrentPosition[1] = Self.GetPositionY()
-		CurrentPosition[2] = Self.GetPositionZ()
-		CurrentRotation[0] = Self.GetAngleX()
-		CurrentRotation[1] = Self.GetAngleY()
-		CurrentRotation[2] = Self.GetAngleZ()
+	if(is3dLoaded() && isEnabled())
+		bIsMoved = false
+		TranslateTo(OriginalPosition[0], OriginalPosition[1], OriginalPosition[2], OriginalRotation[0], OriginalRotation[1], OriginalRotation[2], 500.0)
 		
-		; Get absolute position
 		Float[] OffsetPosition = new Float[3]
 		Float[] OffsetRotation = new Float[3]
 		OffsetPosition[0] = 0.0
@@ -91,7 +87,7 @@ bool Function FixRotation()
 		OffsetRotation[1] = -90.0
 		OffsetRotation[2] = 0
 		
-		Float[] TargetCoordinates = SS2AOP_VaultTecTools:CobbLibraryRotations.GetCoordinatesRelativeToBase(CurrentPosition, CurrentRotation, OffsetPosition, OffsetRotation)
+		Float[] TargetCoordinates = SS2AOP_VaultTecTools:CobbLibraryRotations.GetCoordinatesRelativeToBase(OriginalPosition, OriginalRotation, OffsetPosition, OffsetRotation)
 
 		if TargetCoordinates[3] < -89.0 && TargetCoordinates[3] > -91.0 ; Not always exactly -90
 			TargetCoordinates[5] += 180.0
@@ -99,7 +95,7 @@ bool Function FixRotation()
 		if TargetCoordinates[3] < 1.0 && TargetCoordinates[3] > -1.0 ; Not always exactly 0
 			TargetCoordinates[5] += 90.0
 		endIf
-		Self.TranslateTo(TargetCoordinates[0], TargetCoordinates[1], TargetCoordinates[2], TargetCoordinates[3], TargetCoordinates[4], TargetCoordinates[5], 500.0)
+		TranslateTo(TargetCoordinates[0], TargetCoordinates[1], TargetCoordinates[2], TargetCoordinates[3], TargetCoordinates[4], TargetCoordinates[5], 500.0)
 		bIsMoved = true
 	endif
 	return bIsMoved

@@ -45,11 +45,11 @@ Function Enable(bool abFade = false)
 		LevelSpawnRefs = new ObjectReference[0]
 	EndIf
 	
-	Self.SpawnLevelItems()
+	SpawnLevelItems()
 	
 	if (StallFurniture as bool)
-		Self.RegisterForRemoteEvent(StallFurniture, "OnActivate")
-		Self.RegisterForRemoteEvent(StallFurniture, "OnExitFurniture")
+		RegisterForRemoteEvent(StallFurniture, "OnActivate")
+		RegisterForRemoteEvent(StallFurniture, "OnExitFurniture")
 	endIf
 	
 	if (StallDoor as bool)
@@ -96,7 +96,7 @@ EndFunction
 
 Event ObjectReference.OnActivate(ObjectReference akSender, ObjectReference akActionRef)
 	if akSender == StallFurniture && StallFurniture.IsFurnitureInUse(true)
-		Self.CallFunctionNoWait("PlayOnActivateSound", new var[0])
+		CallFunctionNoWait("PlayOnActivateSound", new var[0])
 		if StallDoor
 			StallDoor.SetOpen(false)
 			if Settings_RecInt01_NoLock.GetValue() != 1.0
@@ -109,7 +109,7 @@ EndEvent
 
 Event ObjectReference.OnExitFurniture(ObjectReference akSender, ObjectReference akActionRef)
 	if akSender == StallFurniture
-		Self.CallFunctionNoWait("PlayOnExitFurnitureSound", new var[0])
+		CallFunctionNoWait("PlayOnExitFurnitureSound", new var[0])
 		if StallDoor
 			StallDoor.SetOpen(true)
 			StallDoor.SetLockLevel(0)
@@ -125,7 +125,7 @@ EndEvent
 Event OnTimer(Int aiTimerID)
 	if StallFurniture
 		if StallFurniture.IsFurnitureInUse(true)
-			Self.CallFunctionNoWait("PlayOnActivateSound", new var[0])
+			CallFunctionNoWait("PlayOnActivateSound", new var[0])
 			if StallDoor
 				StallDoor.SetOpen(false)
 				if Settings_RecInt01_NoLock.GetValue() != 1.0
@@ -134,13 +134,13 @@ Event OnTimer(Int aiTimerID)
 				endIf
 			endIf
 		else
-			Self.ClearFurnInUse()
+			ClearFurnInUse()
 		endIf
 	endIf
 EndEvent
 
 Event OnUnload()
-	Self.ClearFurnInUse()
+	ClearFurnInUse()
 EndEvent
 
 Function PlayOnActivateSound()
@@ -221,7 +221,7 @@ Function Cleanup()
 	StallFurniture = none
 	StallDoor = none
 	bIsCWSS = false
-	Self.UnregisterForAllRemoteEvents()
+	UnregisterForAllRemoteEvents()
 	if iFurnitureInUseSound
 		Sound.StopInstance(iFurnitureInUseSound)
 		iFurnitureInUseSound = 0
@@ -234,6 +234,6 @@ Function Cleanup()
 EndFunction
 
 Function Delete()
-	Self.Cleanup()
+	Cleanup()
 	Parent.Delete()
 EndFunction 

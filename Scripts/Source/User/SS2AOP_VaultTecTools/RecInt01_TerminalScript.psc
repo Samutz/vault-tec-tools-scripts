@@ -1,7 +1,5 @@
 Scriptname SS2AOP_VaultTecTools:RecInt01_TerminalScript extends ObjectReference 
 
-Import SS2AOP_VaultTecTools:SamutzLibrary
-
 WorkshopFramework:Library:DataStructures:WorldObject Property StallToiletActivator Auto Const Mandatory
 WorkshopFramework:Library:DataStructures:WorldObject Property StallShowerActivator Auto Const Mandatory
 Keyword Property kgSim_PlotSpawned Auto Const Mandatory
@@ -16,17 +14,17 @@ EndEvent
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
-	Self.CallFunctionNoWait("AsyncEnable", none)
+	CallFunctionNoWait("AsyncEnable", none)
 EndFunction
 
 Function AsyncEnable()
-	if !Self.IsDeleted() && !Self.IsDestroyed() 
+	if !IsDeleted() && !IsDestroyed() 
 		plotLinkHolder = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:plotlinkholder
-		Self.SetActorRefOwner(Game.GetPlayer())
+		SetActorRefOwner(Game.GetPlayer())
 		
 		if iNumStalls == 0
-			Self.AddStall()
-			Self.AddStall()
+			AddStall()
+			AddStall()
 		endIf
 	endIf
 EndFunction
@@ -43,7 +41,6 @@ Function AddStall(int iType = 0)
 		
 		spawnObject.fPosY = (iNumStalls * 126) + -63 ; distance from plot center
 		plotLinkHolder.kPlotRef.SpawnStageItem(spawnObject, plotLinkHolder.kWorkshopRef, (plotLinkHolder.kPlotRef as ObjectReference))
-		;ObjectReference newStall = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(plotRef, spawnObject, 144, rowDistance, 0, 0, 0, 90)
 		iNumStalls += 1
 		DummyGV.SetValue(iNumStalls as float)
 	endIf
@@ -70,17 +67,17 @@ EndFunction
 
 Function RemoveAllStalls()
 	while iNumStalls > 0
-		Self.RemoveStall()
+		RemoveStall()
 	endWhile
 	DummyGV.SetValue(iNumStalls as float)
 EndFunction
 
 Function Cleanup()
-	Self.RemoveAllStalls()
+	RemoveAllStalls()
 EndFunction
 
 Function Delete()
-	Self.Cleanup()
+	Cleanup()
 	Parent.Delete()
 EndFunction
 

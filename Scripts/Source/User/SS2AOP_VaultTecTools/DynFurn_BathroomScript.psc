@@ -1,7 +1,5 @@
 Scriptname SS2AOP_VaultTecTools:DynFurn_BathroomScript extends ObjectReference
 
-Import SS2AOP_VaultTecTools:SamutzLibrary
-
 LevelSpawnItemStruct[] Property LevelSpawnItems Auto
 Keyword Property kwLinkParent Auto Const Mandatory
 
@@ -28,8 +26,8 @@ Function Constructed()
 		MiscSpawnRefs = new ObjectReference[0]
 	EndIf
 	
-	Self.SpawnLevelItems()
-	Self.RefreshFormListSpawns()
+	SpawnLevelItems()
+	RefreshFormListSpawns()
 EndFunction
 
 Function SpawnLevelItems()
@@ -96,29 +94,29 @@ EndFunction
 
 Event OnWorkshopObjectPlaced(ObjectReference akReference)
 	;debug.notification("placed")
-	Self.Constructed()
+	Constructed()
 EndEvent
 
 Event OnWorkshopObjectMoved(ObjectReference akReference)
 	;debug.notification("moved")
-	Self.Constructed()
+	Constructed()
 EndEvent
 
 Event OnWorkshopObjectDestroyed(ObjectReference akReference)
-	Self.Cleanup()
+	Cleanup()
 EndEvent
 
 Event OnWorkshopObjectGrabbed(ObjectReference akReference)
-	Self.Cleanup()
+	Cleanup()
 EndEvent
 
 Event OnCellLoad()
-	if Self.IsEnabled() && !Self.IsDeleted() && !Self.IsDestroyed()
-		Self.RefreshFormListSpawns()
+	if IsEnabled() && !IsDeleted() && !IsDestroyed()
+		RefreshFormListSpawns()
 	endIf
 EndEvent
 
 Function Delete()
-	Self.Cleanup()
+	Cleanup()
 	Parent.Delete()
 EndFunction

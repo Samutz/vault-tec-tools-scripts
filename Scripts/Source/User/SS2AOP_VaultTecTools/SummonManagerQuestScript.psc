@@ -50,7 +50,7 @@ Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
     if asMenuName == "PipboyMenu" || asMenuName == "TerminalMenu"
         if !abOpening && iSummonCondition > -1
 			UnregisterForAllMenuOpenCloseEvents()
-			Self.SummonBy()
+			SummonBy()
         endif
     endif
 endEvent 
@@ -67,7 +67,7 @@ Function StartListener(int iThisSummonCondition, ObjectReference akTerminalRef)
 		iSummonCondition = iThisSummonCondition
 	else
 		NoSettlementWarning.Show()
-		Self.Stop()
+		Stop()
 	endIf
 EndFunction
 
@@ -124,14 +124,14 @@ Function SummonBy()
 		Debug.EnableAI(true)
 		
 		if SummonedSettlersAlias.GetCount() > 0
-			Self.StartTimer(60)
+			StartTimer(60)
 		else
 			NoMatchWarning.Show()
-			Self.Stop()
+			Stop()
 		endIf
 	else
 		NoMatchWarning.Show()
-		Self.Stop()
+		Stop()
 	endIf
 EndFunction
 
@@ -161,12 +161,12 @@ EndFunction
 
 Event Actor.OnLocationChange(Actor akSender, Location akOldLoc, Location akNewLoc)
 	;debug.notification("OnLocationChange")
-	Self.Stop()
+	Stop()
 EndEvent
 
 Event OnTimer(int iTimerId)
 	;debug.notification("OnTimer() count: "+SummonedSettlersAlias.GetCount())
-	Self.Stop()
+	Stop()
 EndEvent
 
 Function InstallModChanges()

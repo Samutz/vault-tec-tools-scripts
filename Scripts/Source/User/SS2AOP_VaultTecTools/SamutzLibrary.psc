@@ -1,8 +1,5 @@
 Scriptname SS2AOP_VaultTecTools:SamutzLibrary Const
 
-Import SS2AOP_VaultTecTools:CobbLibraryRotations
-Import WorkshopFramework:Library:DataStructures
-
 ObjectReference Function GetParentPlot(ObjectReference selfRef, Keyword kPlotSpawned) Global
 	ObjectReference plotRef = None
 	int retry = 0

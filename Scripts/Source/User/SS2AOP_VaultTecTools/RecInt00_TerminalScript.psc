@@ -1,7 +1,5 @@
 Scriptname SS2AOP_VaultTecTools:RecInt00_TerminalScript extends ObjectReference 
 
-Import SS2AOP_VaultTecTools:SamutzLibrary
-
 Form Property furnDeskBase Auto Const Mandatory
 WorkshopFramework:Library:DataStructures:WorldObject[] Property DeskRow Auto Const Mandatory
 Keyword Property kgSim_PlotSpawned Auto Const Mandatory
@@ -16,13 +14,13 @@ EndEvent
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
-	Self.CallFunctionNoWait("AsyncEnable", none)
+	CallFunctionNoWait("AsyncEnable", none)
 EndFunction
 
 Function AsyncEnable()
-	if !Self.IsDeleted() && !Self.IsDestroyed() 
+	if !IsDeleted() && !IsDestroyed() 
 		plotLinkHolder = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:plotlinkholder
-		Self.SetActorRefOwner(Game.GetPlayer())
+		SetActorRefOwner(Game.GetPlayer())
 	endIf
 EndFunction
 
@@ -42,7 +40,7 @@ EndFunction
 Function AddMultipleRows(int count = 1)
 	int i = 0
 	while i < count
-		Self.AddDeskRow()
+		AddDeskRow()
 		i += 1
 	endWhile
 	DummyGV.SetValue(iNumRows as float)
@@ -66,17 +64,17 @@ EndFunction
 
 Function RemoveAllDesks()
 	while iNumRows > 0
-		Self.RemoveDeskRow()
+		RemoveDeskRow()
 	endWhile
 	DummyGV.SetValue(iNumRows as float)
 EndFunction
 
 Function Cleanup()
-	Self.RemoveAllDesks()
+	RemoveAllDesks()
 EndFunction
 
 Function Delete()
-	Self.Cleanup()
+	Cleanup()
 	Parent.Delete()
 EndFunction
 
