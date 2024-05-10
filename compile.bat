@@ -1,0 +1,1 @@
+"..\..\Stock Game\Papyrus Compiler\PapyrusCompiler.exe" "SS2AOP_VaultTecTools.ppj"
