@@ -5,8 +5,10 @@ ObjectReference Function GetParentPlot(ObjectReference selfRef, Keyword kPlotSpa
 	int retry = 0
 	while !(plotRef as bool) && retry < 10
 		plotRef = selfRef.GetLinkedRef(kPlotSpawned) as ObjectReference
-		Utility.Wait(1)
-		retry += 1
+		if !(plotRef as bool)
+			Utility.Wait(1)
+			retry += 1
+		endIf
 	endWhile
 	return plotRef
 EndFunction
