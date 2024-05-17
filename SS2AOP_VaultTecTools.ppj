@@ -15,7 +15,6 @@
 	</Imports>
 	<Scripts>
 		<Script>SS2AOP_VaultTecTools:SamutzLibrary</Script>
-		<Script>SS2AOP_VaultTecTools:CobbLibraryRotations</Script>
 		<Script>SS2AOP_VaultTecTools:DynFurnScript</Script>
 		<Script>SS2AOP_VaultTecTools:ManagementQuestScript</Script>
 		<Script>SS2AOP_VaultTecTools:DynFurn_BathroomScript</Script>
