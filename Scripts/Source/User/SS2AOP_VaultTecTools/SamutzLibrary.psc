@@ -24,7 +24,7 @@ ObjectReference Function PlaceRelativeToMe(ObjectReference selfRef, Form baseFor
 	fRotOff[0] = fRotOffX
 	fRotOff[1] = fRotOffY
 	fRotOff[2] = fRotOffZ
-	SS2AOP_VaultTecTools:CobbLibraryRotations.MoveObjectRelativeToObject(spawnedRef, selfRef, fPosOff, fRotOff)
+	WorkshopFramework:Library:ThirdParty:Cobb:CobbLibraryRotations.MoveObjectRelativeToObject(spawnedRef, selfRef, fPosOff, fRotOff)
 	return spawnedRef
 EndFunction
 

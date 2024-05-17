@@ -87,7 +87,7 @@ bool Function FixRotation()
 		OffsetRotation[1] = -90.0
 		OffsetRotation[2] = 0
 		
-		Float[] TargetCoordinates = SS2AOP_VaultTecTools:CobbLibraryRotations.GetCoordinatesRelativeToBase(OriginalPosition, OriginalRotation, OffsetPosition, OffsetRotation)
+		Float[] TargetCoordinates = WorkshopFramework:Library:ThirdParty:Cobb:CobbLibraryRotations.GetCoordinatesRelativeToBase(OriginalPosition, OriginalRotation, OffsetPosition, OffsetRotation)
 
 		if TargetCoordinates[3] < -89.0 && TargetCoordinates[3] > -91.0 ; Not always exactly -90
 			TargetCoordinates[5] += 180.0
