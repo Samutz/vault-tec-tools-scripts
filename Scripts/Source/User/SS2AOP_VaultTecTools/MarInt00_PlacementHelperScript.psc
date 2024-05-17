@@ -10,7 +10,5 @@ Event OnWorkshopObjectPlaced(ObjectReference akReference)
 		plotRef.AssignBuildingPlan(AssignedPlan)
 		plotRef.bPlayerSelectedPlanManually = true
 	endIf
-	Disable(false)
-	Delete()
+	WorkshopFramework:WSFW_API.RemoveSettlementObject(Self as ObjectReference)
 EndEvent
-
