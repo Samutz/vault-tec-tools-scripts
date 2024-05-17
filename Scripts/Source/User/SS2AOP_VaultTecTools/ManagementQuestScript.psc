@@ -150,19 +150,7 @@ Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
 			CheckForSSInstall()
         endif
     endif
-endEvent 
-
-Event RefCollectionAlias.OnCellLoad(RefCollectionAlias akSenderAlias, ObjectReference akSenderRef)
-	if akSenderRef.IsOwnedBy(PlayerRef)
-		StartTimer(3, 0)
-	endIf
-EndEvent
-
-Event OnTimer(int iTimerId)
-	if iTimerId == 0
-		CheckMenuInjector()
-	endIf
-EndEvent
+endEvent
 
 ; ---------------------------------------------
 ; Methods -------------------------------------
@@ -202,13 +190,10 @@ Function Startup()
 	; always check this because quest may be completed at any time
 	CheckChanceNoneQuests()
 	
-	; reload door manager in case loading in to a workshop
-	CheckMenuInjector()
-	UnregisterForRemoteEvent(WorkshopParent.WorkshopsCollection, "OnCellLoad") ; redo this on every save load incase of new workshops
-	RegisterForRemoteEvent(WorkshopParent.WorkshopsCollection, "OnCellLoad")
+	CheckMenuInjectorQuest()
 EndFunction
 
-Function CheckMenuInjector()
+Function CheckMenuInjectorQuest()
 	if !SettlementMenuInjector.IsRunning()
 		Debug.TraceUser(LogName, "Starting SettlementMenuInjector")
 		SettlementMenuInjector.Start()
@@ -388,7 +373,12 @@ EndFunction
 
 Function InstallModChanges()
 	; Make changes here - use format if(InstalledVersion < X.X) do something endif 
-		
+
+	if (InstalledVersion < 2.0)
+		; VTT for SS1 leftover, not needed on any version of VTT for SS2
+		UnregisterForRemoteEvent(WorkshopParent.WorkshopsCollection, "OnCellLoad") 
+	EndIf
+
 	; Once complete, flag our version as up to date
 	InstalledVersion = CurrentVersion.GetValue()
 	InstallVersionMessage.Show(InstalledVersion)
