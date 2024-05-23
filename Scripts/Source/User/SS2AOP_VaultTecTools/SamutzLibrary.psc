@@ -37,23 +37,3 @@ ObjectReference[] Function CleanUpChildSpawns(ObjectReference parentRef, Keyword
 		i += 1
 	endWhile
 EndFunction
-
-workshopscript Function GetNearestWorkshop(ObjectReference akObjectRef, Keyword WorkshopKeyword) Global
-    If (!akObjectRef)
-        return None
-    EndIf
-    workshopscript NearestWorkshop = None
-    ObjectReference[] WorkshopsNearby = akObjectRef.FindAllReferencesWithKeyword(WorkshopKeyword as Form, 10000)
-    int I = 0
-    While (I < WorkshopsNearby.length)
-        If (NearestWorkshop)
-            If (WorkshopsNearby[I].GetDistance(akObjectRef) < NearestWorkshop.GetDistance(akObjectRef))
-                NearestWorkshop = WorkshopsNearby[I] as workshopscript
-            EndIf
-        Else
-            NearestWorkshop = WorkshopsNearby[I] as workshopscript
-        EndIf
-        I += 1
-    EndWhile
-    return NearestWorkshop
-EndFunction
