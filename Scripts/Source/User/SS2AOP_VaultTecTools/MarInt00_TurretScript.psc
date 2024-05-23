@@ -6,9 +6,12 @@ GlobalVariable Property AutomateDoorSetting Auto Const Mandatory
 
 SS2AOP_VaultTecTools:MarInt00_GearDoorScript aDoorRef = none
 
-Bool bIsMoved = false
 Float[] OriginalPosition = none
 Float[] OriginalRotation = none
+
+Bool Property bIsMoved = false Auto Hidden
+bool Property bPowered = false Auto Hidden
+ObjectReference Property plotRef = none Auto Hidden
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
@@ -30,11 +33,21 @@ Function AsyncEnable()
 		int retry = 0
 		while !bIsMoved && retry < 5
 			bIsMoved = FixRotation()
-			retry += 5
+			if !bIsMoved
+				Utility.Wait(1)
+				retry += 1
+			endIf
 		endWhile
 		
-		ObjectReference plotRef = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned)
-		ObjectReference[] plotSpawns = plotRef.GetLinkedRefChildren(kgSim_PlotSpawned)
+		ObjectReference plotHolderRef = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) 
+		plotRef = plotHolderRef.GetPropertyValue("kPlotRef") as ObjectReference
+		ObjectReference[] plotSpawns = plotHolderRef.GetLinkedRefChildren(kgSim_PlotSpawned)
+
+		bPowered = plotRef.IsPowered()
+		SetUnconscious(!bPowered)
+
+		RegisterForRemoteEvent(plotRef, "OnPowerOn")
+		RegisterForRemoteEvent(plotRef, "OnPowerOff")
 
 		int i = 0
 		while i < plotSpawns.length && !(aDoorRef as bool)
@@ -43,28 +56,40 @@ Function AsyncEnable()
 			endIf
 			i += 1
 		endWhile
-		
+
 		CheckCombatState(GetCombatState())
 	endIf
+EndFunction
+
+Bool Function IsAssigned()
+	return plotRef.GetPropertyValue("PrimaryOwner") as bool
+EndFunction
+
+Function GetAssigned()
+	Debug.Notification("Assigned: "+IsAssigned())
 EndFunction
 
 Function Delete()
 	bIsMoved = false
 	aDoorRef = none
+	UnregisterForRemoteEvent(plotRef, "OnPowerOn")
+	UnregisterForRemoteEvent(plotRef, "OnPowerOff")
 	Parent.Delete()
 EndFunction
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
-	if (aDoorRef as bool) && IsEnabled() && !IsDeleted() && !IsDestroyed() 
+	if (aDoorRef as bool) && IsEnabled() && !IsDeleted() && !IsDestroyed()
 		CheckCombatState(aeCombatState)
-		; check again after 10 secs in case combatstate changed during door animation
-		Utility.Wait(10)
-		CheckCombatState(GetCombatState())
+	endIf
+	; check again after 10 secs in case combatstate changed during door animation
+	Utility.Wait(10)
+	if (aDoorRef as bool) && IsEnabled() && !IsDeleted() && !IsDestroyed()
+		CheckCombatState(aeCombatState)
 	endIf
 EndEvent
 
 Function CheckCombatState(int aeCombatState)
-	if (aDoorRef as bool) && AutomateDoorSetting.GetValue() == 1.0
+	if (aDoorRef as bool) && AutomateDoorSetting.GetValue() == 1.0 && !IsUnconscious() && IsAssigned()
 		if aeCombatState==1 && aDoorRef.iDoorState==2
 			aDoorRef.Activate(Self)
 		elseif aeCombatState==0 && aDoorRef.iDoorState==0
@@ -100,3 +125,13 @@ bool Function FixRotation()
 	endif
 	return bIsMoved
 EndFunction
+
+Event ObjectReference.OnPowerOn(ObjectReference akSender, ObjectReference akPowerGenerator)
+	bPowered = true
+	SetUnconscious(!bPowered)
+EndEvent
+
+Event ObjectReference.OnPowerOff(ObjectReference akSender)
+	bPowered = false
+	SetUnconscious(!bPowered)
+EndEvent
