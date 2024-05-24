@@ -3,6 +3,7 @@ Scriptname SS2AOP_VaultTecTools:MarInt00_GearDoorScript extends ObjectReference
 string Property sAnim = "ActivateDoor" Auto const
 Message Property PowerReqMessage Auto Const Mandatory
 Keyword Property kgSim_PlotSpawned Auto Const Mandatory
+Message Property ConfirmPlotMove Auto Const Mandatory
 
 ; 0 = closed, 1 = opening, 2 = open, 3 = closing
 int Property iDoorState = 0 Auto hidden
@@ -61,4 +62,35 @@ EndEvent
 
 Event ObjectReference.OnPowerOff(ObjectReference akSender)
 	bPowered = false
+EndEvent
+
+Event OnWorkshopObjectMoved(ObjectReference akReference)
+	int answer = ConfirmPlotMove.Show()
+	if answer == 1 ; yes
+		;plotRef.MoveTo(Self, -8, -128, 6.75, true)
+		;plotRef.SetAngle(plotRef.GetAngleX(), plotRef.GetAngleY(), plotRef.GetAngleZ()+180)
+
+		Float[] OriginalPosition = new Float[3]
+		Float[] OriginalRotation = new Float[3]
+		OriginalPosition[0] = GetPositionX()
+		OriginalPosition[1] = GetPositionY()
+		OriginalPosition[2] = GetPositionZ()
+		OriginalRotation[0] = GetAngleX()
+		OriginalRotation[1] = GetAngleY()
+		OriginalRotation[2] = GetAngleZ()
+
+		Float[] OffsetPosition = new Float[3]
+		Float[] OffsetRotation = new Float[3]
+		OffsetPosition[0] = -8.0
+		OffsetPosition[1] = -128.0
+		OffsetPosition[2] = 6.75
+		OffsetRotation[0] = 0.0
+		OffsetRotation[1] = 0.0
+		OffsetRotation[2] = 180.0
+
+		Float[] TargetCoordinates = WorkshopFramework:Library:ThirdParty:Cobb:CobbLibraryRotations.GetCoordinatesRelativeToBase(OriginalPosition, OriginalRotation, OffsetPosition, OffsetRotation)
+		plotRef.TranslateTo(TargetCoordinates[0], TargetCoordinates[1], TargetCoordinates[2], TargetCoordinates[3], TargetCoordinates[4], TargetCoordinates[5], 500.0)
+
+		plotRef.OnWorkshopObjectMoved(akReference)
+	endIf
 EndEvent
