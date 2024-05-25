@@ -67,9 +67,6 @@ EndEvent
 Event OnWorkshopObjectMoved(ObjectReference akReference)
 	int answer = ConfirmPlotMove.Show()
 	if answer == 1 ; yes
-		;plotRef.MoveTo(Self, -8, -128, 6.75, true)
-		;plotRef.SetAngle(plotRef.GetAngleX(), plotRef.GetAngleY(), plotRef.GetAngleZ()+180)
-
 		Float[] OriginalPosition = new Float[3]
 		Float[] OriginalRotation = new Float[3]
 		OriginalPosition[0] = GetPositionX()
