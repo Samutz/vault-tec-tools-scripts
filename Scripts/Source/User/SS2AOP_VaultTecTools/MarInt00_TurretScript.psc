@@ -13,51 +13,57 @@ Bool Property bIsMoved = false Auto Hidden
 bool Property bPowered = false Auto Hidden
 ObjectReference Property plotRef = none Auto Hidden
 
+bool Property bEnabled = false Auto Hidden
+
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
 	CallFunctionNoWait("AsyncEnable", none)
 EndFunction
 
 Function AsyncEnable()
-	OriginalPosition = new Float[3]
-	OriginalRotation = new Float[3]
-	
-	if !IsDeleted() && !IsDestroyed()
-		OriginalPosition[0] = GetPositionX()
-		OriginalPosition[1] = GetPositionY()
-		OriginalPosition[2] = GetPositionZ()
-		OriginalRotation[0] = GetAngleX()
-		OriginalRotation[1] = GetAngleY()
-		OriginalRotation[2] = GetAngleZ()
-	
-		int retry = 0
-		while !bIsMoved && retry < 5
-			bIsMoved = FixRotation()
-			if !bIsMoved
-				Utility.Wait(1)
-				retry += 1
-			endIf
-		endWhile
+    if !bEnabled
+        bEnabled = true
+
+		OriginalPosition = new Float[3]
+		OriginalRotation = new Float[3]
 		
-		ObjectReference plotHolderRef = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) 
-		plotRef = plotHolderRef.GetPropertyValue("kPlotRef") as ObjectReference
-		ObjectReference[] plotSpawns = plotHolderRef.GetLinkedRefChildren(kgSim_PlotSpawned)
+		if !IsDeleted() && !IsDestroyed()
+			OriginalPosition[0] = GetPositionX()
+			OriginalPosition[1] = GetPositionY()
+			OriginalPosition[2] = GetPositionZ()
+			OriginalRotation[0] = GetAngleX()
+			OriginalRotation[1] = GetAngleY()
+			OriginalRotation[2] = GetAngleZ()
+		
+			int retry = 0
+			while !bIsMoved && retry < 5
+				bIsMoved = FixRotation()
+				if !bIsMoved
+					Utility.Wait(1)
+					retry += 1
+				endIf
+			endWhile
+			
+			ObjectReference plotHolderRef = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) 
+			plotRef = plotHolderRef.GetPropertyValue("kPlotRef") as ObjectReference
+			ObjectReference[] plotSpawns = plotHolderRef.GetLinkedRefChildren(kgSim_PlotSpawned)
 
-		bPowered = plotRef.IsPowered()
-		SetUnconscious(!bPowered)
+			bPowered = plotRef.IsPowered()
+			SetUnconscious(!bPowered)
 
-		RegisterForRemoteEvent(plotRef, "OnPowerOn")
-		RegisterForRemoteEvent(plotRef, "OnPowerOff")
+			RegisterForRemoteEvent(plotRef, "OnPowerOn")
+			RegisterForRemoteEvent(plotRef, "OnPowerOff")
 
-		int i = 0
-		while i < plotSpawns.length && !(aDoorRef as bool)
-			if plotSpawns[i].HasKeyword(kwDoor)
-				aDoorRef = plotSpawns[i] as SS2AOP_VaultTecTools:MarInt00_GearDoorScript
-			endIf
-			i += 1
-		endWhile
+			int i = 0
+			while i < plotSpawns.length && !(aDoorRef as bool)
+				if plotSpawns[i].HasKeyword(kwDoor)
+					aDoorRef = plotSpawns[i] as SS2AOP_VaultTecTools:MarInt00_GearDoorScript
+				endIf
+				i += 1
+			endWhile
 
-		CheckCombatState(GetCombatState())
+			CheckCombatState(GetCombatState())
+		endIf
 	endIf
 EndFunction
 

@@ -8,6 +8,8 @@ GlobalVariable Property DummyGV Auto Const Mandatory
 SimSettlementsV2:ObjectReferences:plotlinkholder plotLinkHolder = none
 int iNumStalls = 0
 
+bool Property bEnabled = false Auto Hidden
+
 Event OnActivate(ObjectReference akBruh)
 	DummyGV.SetValue(iNumStalls as float)
 EndEvent
@@ -18,13 +20,17 @@ Function Enable(bool abFade = false)
 EndFunction
 
 Function AsyncEnable()
-	if !IsDeleted() && !IsDestroyed() 
-		plotLinkHolder = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:plotlinkholder
-		SetActorRefOwner(Game.GetPlayer())
+    if !bEnabled
+        bEnabled = true
 		
-		if iNumStalls == 0
-			AddStall()
-			AddStall()
+		if !IsDeleted() && !IsDestroyed() 
+			plotLinkHolder = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:plotlinkholder
+			SetActorRefOwner(Game.GetPlayer())
+			
+			if iNumStalls == 0
+				AddStall()
+				AddStall()
+			endIf
 		endIf
 	endIf
 EndFunction

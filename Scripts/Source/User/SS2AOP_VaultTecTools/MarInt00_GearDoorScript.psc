@@ -9,6 +9,7 @@ Message Property ConfirmPlotMove Auto Const Mandatory
 int Property iDoorState = 0 Auto hidden
 bool Property bPowered = false Auto Hidden
 ObjectReference Property plotRef = none Auto Hidden
+bool Property bEnabled = false Auto Hidden
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
@@ -16,15 +17,19 @@ Function Enable(bool abFade = false)
 EndFunction
 
 Function AsyncEnable()
-	if !IsDeleted() && !IsDestroyed()
-		iDoorState = 0
+    if !bEnabled
+        bEnabled = true
+
+		if !IsDeleted() && !IsDestroyed()
+			iDoorState = 0
+		endIf
+
+		plotRef = (SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:PlotLinkHolder).kPlotRef
+		bPowered = plotRef.IsPowered()
+
+		RegisterForRemoteEvent(plotRef, "OnPowerOn")
+		RegisterForRemoteEvent(plotRef, "OnPowerOff")
 	endIf
-
-	plotRef = (SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:PlotLinkHolder).kPlotRef
-	bPowered = plotRef.IsPowered()
-
-	RegisterForRemoteEvent(plotRef, "OnPowerOn")
-	RegisterForRemoteEvent(plotRef, "OnPowerOff")
 EndFunction
 
 Function Delete()
