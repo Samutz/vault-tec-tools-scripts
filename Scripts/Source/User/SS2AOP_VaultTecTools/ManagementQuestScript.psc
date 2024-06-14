@@ -89,6 +89,7 @@ Struct FormListInjectionObject
 	{match a defined plugin name}
 	int iFormListIndex = -1
 	{match a defined LeveledItem}
+	bool bSourceIsFormList = false
 EndStruct
 
 Struct VipAVStruct
@@ -324,8 +325,16 @@ Function InjectDLCObjects()
 		if PluginDefinitions[p].bInstalled && FormLists[l] 
 			if FormListInjectionObjects[i].iFormId
 				Form injectForm = Game.GetFormFromFile(FormListInjectionObjects[i].iFormId, PluginDefinitions[p].sName) as Form
-				if injectForm
-					FormLists[l].AddForm(injectForm)
+				if FormListInjectionObjects[i].bSourceIsFormList
+					int j = 0
+					while j < (injectForm as FormList).GetSize()
+						FormLists[l].AddForm((injectForm as FormList).GetAt(j))
+						j += 1
+					endWhile
+				else
+					if injectForm
+						FormLists[l].AddForm(injectForm)
+					endIf
 				endIf
 			endif
 			if FormListInjectionObjects[i].LocalForm
