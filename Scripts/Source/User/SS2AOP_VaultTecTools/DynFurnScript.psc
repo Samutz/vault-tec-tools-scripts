@@ -1,22 +1,26 @@
 Scriptname SS2AOP_VaultTecTools:DynFurnScript extends ObjectReference
 
-Group CenterPiece
-	FormList Property flCenterPieces Auto Const
-	float Property fCenterPieceOffsetX = 0.0 Auto Const
-	float Property fCenterPieceOffsetY = 0.0  Auto Const
-	float Property fCenterPieceOffsetZ = 0.0  Auto Const
-	float Property fCenterPieceRotationX = 0.0  Auto Const
-	float Property fCenterPieceRotationY = 0.0  Auto Const
-	float Property fCenterPieceRotationZ = 0.0  Auto Const
-	float Property fCenterPieceScale = 1.0  Auto Const
+Group DynamicFurniture
+	StaticSpawnItemsStruct[] Property StaticSpawnItems Auto Const
+	DynamicSpawnItemsStruct[] Property DynamicSpawnItems Auto
+	Keyword Property kwLinkDynamicItems Auto Const Mandatory
+	Keyword Property kwLinkStaticItems Auto Const Mandatory
 EndGroup
 
-propFoodSpawnStruct[] Property FoodSpawnStructs Auto Const
-Keyword Property kwLinkParent Auto Const Mandatory
-Static Property NavcutStatic Auto Const
+Struct StaticSpawnItemsStruct
+	Form SpawnItem
+	float fOffsetX = 0.0
+	float fOffsetY = 0.0
+	float fOffsetZ = 0.0
+	float fRotationX = 0.0
+	float fRotationY = 0.0
+	float fRotationZ = 0.0
+	float fScale = 1.0
+EndStruct
 
-Struct propFoodSpawnStruct
+Struct DynamicSpawnItemsStruct
 	int iMarkerNumber = 0
+	Form SpawnItem
 	float fOffsetX = 0.0 
 	float fOffsetY = 0.0 
 	float fOffsetZ = 0.0 
@@ -24,184 +28,193 @@ Struct propFoodSpawnStruct
 	float fRotationY = 0.0 
 	float fRotationZ = 0.0
 	float fScale = 1.0
-	FormList flFoodToSpawn
+	ObjectReference akSpawnedItem = none
+	{ DO NOT USE }
 EndStruct
 
-Struct refFoodSpawnStruct
-	int iMarkerNumber
-	ObjectReference refFoodSpawn
-EndStruct
+bool bCleaning = false
+bool bSpawningStaticItems = false
+bool bCheckingSpawnsNeeded = false
+bool bCheckingSpawnsNeedCleaning = false
+bool bWorkshopObjectPlaced = true
 
-refFoodSpawnStruct[] FoodSpawnRefs = none
-ObjectReference CenterPieceRef = none
-ObjectReference navcutRef = none
-
-Function SpawnFood(int iMarkerNumber)
+Function SpawnDynamicItems(int iMarkerNumber)
 	if IsEnabled() && !IsDeleted() && !IsDestroyed()
-		int i = FoodSpawnStructs.FindStruct("iMarkerNumber", iMarkerNumber)
-		if i > -1 && FoodSpawnStructs[i].flFoodToSpawn.GetSize() > 0
-			int j = FoodSpawnRefs.FindStruct("iMarkerNumber", iMarkerNumber)
-			if j > -1 && (!(FoodSpawnRefs[j].refFoodSpawn as bool) || ((FoodSpawnRefs[j].refFoodSpawn as bool) && FoodSpawnRefs[j].refFoodSpawn.IsDisabled()))
-				int formIndex = Utility.RandomInt(0, FoodSpawnStructs[i].flFoodToSpawn.GetSize() - 1)
-				Form formToSpawn = FoodSpawnStructs[i].flFoodToSpawn.GetAt(formIndex)
-				FoodSpawnRefs[j].refFoodSpawn = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(Self, formToSpawn, FoodSpawnStructs[i].fOffsetX, FoodSpawnStructs[i].fOffsetY, FoodSpawnStructs[i].fOffsetZ, FoodSpawnStructs[i].fRotationX, FoodSpawnStructs[i].fRotationY, FoodSpawnStructs[i].fRotationZ, FoodSpawnStructs[i].fScale)
-				FoodSpawnRefs[j].iMarkerNumber = iMarkerNumber
-				FoodSpawnRefs[j].refFoodSpawn.Enable(true)
-				FoodSpawnRefs[j].refFoodSpawn.SetLinkedRef((Self as ObjectReference), kwLinkParent)
+		int i = DynamicSpawnItems.FindStruct("iMarkerNumber", iMarkerNumber)
+		Form formToSpawn = none
+		int formIndex = -1
+		while i > -1
+			if DynamicSpawnItems[i].akSpawnedItem == none
+				if DynamicSpawnItems[i].SpawnItem as FormList
+					if (DynamicSpawnItems[i].SpawnItem as FormList).GetSize() > 0
+						formIndex = Utility.RandomInt(0, (DynamicSpawnItems[i].SpawnItem as FormList).GetSize() - 1)
+						formToSpawn = (DynamicSpawnItems[i].SpawnItem as FormList).GetAt(formIndex)
+					endIf
+				else
+					formToSpawn = DynamicSpawnItems[i].SpawnItem
+				endIf
+				if formToSpawn
+					DynamicSpawnItems[i].akSpawnedItem = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(Self, formToSpawn, DynamicSpawnItems[i].fOffsetX, DynamicSpawnItems[i].fOffsetY, DynamicSpawnItems[i].fOffsetZ, DynamicSpawnItems[i].fRotationX, DynamicSpawnItems[i].fRotationY, DynamicSpawnItems[i].fRotationZ, DynamicSpawnItems[i].fScale)
+					var[] args = new var[1]
+					args[0] = true
+					DynamicSpawnItems[i].akSpawnedItem.CallFunctionNoWait("Enable", args)
+					DynamicSpawnItems[i].akSpawnedItem.SetLinkedRef((Self as ObjectReference), kwLinkDynamicItems)
+				endIf
 			endIf
-		endIf
+			i = DynamicSpawnItems.FindStruct("iMarkerNumber", iMarkerNumber, i+1)
+		endWhile
 	endIf
 EndFunction
 
-Function SpawnCenterPiece()
-	if IsEnabled() && !IsDeleted() && !IsDestroyed()
-		if flCenterPieces && flCenterPieces.GetSize() > 0 && !(CenterPieceRef as bool) 
-			int formIndex = Utility.RandomInt(0, flCenterPieces.GetSize() - 1)
-			Form formToSpawn = flCenterPieces.GetAt(formIndex)
-			CenterPieceRef = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(Self, formToSpawn, fCenterPieceOffsetX, fCenterPieceOffsetY, fCenterPieceOffsetZ, fCenterPieceRotationX, fCenterPieceRotationY, fCenterPieceRotationZ, fCenterPieceScale)
-			CenterPieceRef.Enable(false)
-			CenterPieceRef.SetLinkedRef((Self as ObjectReference), kwLinkParent)
-		endIf
-		; initalize food spawns array
-		if FoodSpawnRefs.length == 0
-			FoodSpawnRefs = new refFoodSpawnStruct[0]
-			int i = 0
-			while i < FoodSpawnStructs.length
-				refFoodSpawnStruct newSpawnStruct = new refFoodSpawnStruct
-				newSpawnStruct.iMarkerNumber = FoodSpawnStructs[i].iMarkerNumber
-				newSpawnStruct.refFoodSpawn = none
-				FoodSpawnRefs.Add(newSpawnStruct)
-				i += 1
-			endWhile
-		endIf
-	endIf
-EndFunction
+Function SpawnStaticItems()
+	if IsEnabled() && !IsDeleted() && !IsDestroyed() && !bSpawningStaticItems
+		bSpawningStaticItems = true
 
-Function RemoveFoodSpawn(int iMarkerNumber)
-	int j = FoodSpawnRefs.FindStruct("iMarkerNumber", iMarkerNumber)
-	if j > -1
-		if (FoodSpawnRefs[j].refFoodSpawn as bool)
-			FoodSpawnRefs[j].refFoodSpawn.Disable(true)
-			FoodSpawnRefs[j].refFoodSpawn.Delete()
-			FoodSpawnRefs[j].refFoodSpawn = none
-		endIf
-	endIf
-EndFunction
-
-Function Cleanup(bool bCleanCenterPiece, bool bCleanFood, bool bCleanNavcut)
-	if (CenterPieceRef as bool) && bCleanCenterPiece
-		CenterPieceRef.SetLinkedRef(none, none)
-		CenterPieceRef.Disable(false)
-		CenterPieceRef.Delete()
-		CenterPieceRef = none
-	endIf
-	if (FoodSpawnRefs as bool) && bCleanFood
 		int i = 0
-		while i < FoodSpawnRefs.length
-			if (FoodSpawnRefs[i].refFoodSpawn as bool)
-				FoodSpawnRefs[i].refFoodSpawn.SetLinkedRef(none, none)
-				FoodSpawnRefs[i].refFoodSpawn.Disable(false)
-				FoodSpawnRefs[i].refFoodSpawn.Delete()
-				FoodSpawnRefs[i].refFoodSpawn = none
+		while i < StaticSpawnItems.length
+			Form formToSpawn = none
+			if StaticSpawnItems[i].SpawnItem as FormList
+				if (StaticSpawnItems[i].SpawnItem as FormList).GetSize() > 0
+					int formIndex = Utility.RandomInt(0, (StaticSpawnItems[i].SpawnItem as FormList).GetSize() - 1)
+					formToSpawn = (StaticSpawnItems[i].SpawnItem as FormList).GetAt(formIndex)
+				endIf
+			else
+				formToSpawn = StaticSpawnItems[i].SpawnItem
+			endIf
+			if formToSpawn
+				ObjectReference akNewSpawnItem = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(Self, formToSpawn, StaticSpawnItems[i].fOffsetX, StaticSpawnItems[i].fOffsetY, StaticSpawnItems[i].fOffsetZ, StaticSpawnItems[i].fRotationX, StaticSpawnItems[i].fRotationY, StaticSpawnItems[i].fRotationZ, StaticSpawnItems[i].fScale)
+				var[] args = new var[1]
+				args[0] = true
+				akNewSpawnItem.CallFunctionNoWait("Enable", args)
+				akNewSpawnItem.SetLinkedRef((Self as ObjectReference), kwLinkStaticItems)
 			endIf
 			i += 1
 		endWhile
-		FoodSpawnRefs.Clear()
-	endIf
-	if (navcutRef as bool) && bCleanNavcut
-		navcutRef.SetLinkedRef(none, none)
-		navcutRef.Disable(false)
-		navcutRef.Delete()
-		navcutRef = none
-	endIf
-	if bCleanCenterPiece && bCleanFood && bCleanNavcut
-		SS2AOP_VaultTecTools:SamutzLibrary.CleanUpChildSpawns((Self as ObjectReference), kwLinkParent)
+
+		bSpawningStaticItems = false
 	endIf
 EndFunction
 
-Function CheckIfNeedsFood()
-	int i = 0
-	int j = 0
-	while i < FoodSpawnStructs.length
-		j = FoodSpawnRefs.FindStruct("iMarkerNumber", FoodSpawnStructs[i].iMarkerNumber)
-		if IsFurnitureMarkerInUse(FoodSpawnStructs[i].iMarkerNumber, true) && !(FoodSpawnRefs[j].refFoodSpawn as bool)
-			SpawnFood(FoodSpawnStructs[i].iMarkerNumber)
-		endIf
-		i += 1
+Function RemoveDynamicSpawns(int iMarkerNumber)
+	int i = DynamicSpawnItems.FindStruct("iMarkerNumber", iMarkerNumber)
+	while i > -1
+		DynamicSpawnItems[i].akSpawnedItem.Disable(false)
+		DynamicSpawnItems[i].akSpawnedItem.Delete()
+		DynamicSpawnItems[i].akSpawnedItem = none
+		i = DynamicSpawnItems.FindStruct("iMarkerNumber", iMarkerNumber, i + 1)
 	endWhile
 EndFunction
 
-Function CheckIfNeedsFoodCleaned()
-	int i = 0
-	while i < FoodSpawnStructs.length 
-		int retry = 0
-		bool bInUse = true
-		while bInUse && retry < 15
-			Utility.Wait(1)
-			bInUse = IsFurnitureMarkerInUse(FoodSpawnStructs[i].iMarkerNumber, true)
-			if !bInUse
-				RemoveFoodSpawn(FoodSpawnStructs[i].iMarkerNumber)
-			endIf
-			retry += 1
+Function Cleanup()
+	if !bCleaning
+		bCleaning = true
+
+		int i = 0
+		while i < DynamicSpawnItems.length
+			DynamicSpawnItems[i].akSpawnedItem.Disable(false)
+			DynamicSpawnItems[i].akSpawnedItem.Delete()
+			DynamicSpawnItems[i].akSpawnedItem = none
+			i += 1
 		endWhile
-		i += 1
-	endWhile
+
+		ObjectReference[] spawns = GetLinkedRefChildren(kwLinkStaticItems)
+		i = 0
+		while i < spawns.length
+			spawns[i].Disable(false)
+			spawns[i].Delete()
+			i += 1
+		endWhile
+
+		bCleaning = false
+	endIf
 EndFunction
 
-Function SpawnNavcut()
-	if IsEnabled() && !IsDeleted() && !IsDestroyed()
-		if !(navcutRef as bool) && (NavcutStatic as bool)
-			navcutRef = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(Self, NavcutStatic)
-			navcutRef.Enable(false)
-			navcutRef.SetLinkedRef((Self as ObjectReference), kwLinkParent)
-		endIf
+Function CheckIfNeedsDynamicSpawns()
+	if !bCheckingSpawnsNeeded
+		bCheckingSpawnsNeeded = true
+
+		int i = 0
+		while i < DynamicSpawnItems.length
+			if IsFurnitureMarkerInUse(DynamicSpawnItems[i].iMarkerNumber, true)
+				SpawnDynamicItems(DynamicSpawnItems[i].iMarkerNumber)
+			endIf
+			i += 1
+		endWhile
+		bCheckingSpawnsNeeded = false
 	endIf
+EndFunction
+
+Function CheckIfNeedsDynamicSpawnsCleaned()
+	if !bCheckingSpawnsNeedCleaning
+		bCheckingSpawnsNeedCleaning = true
+
+		int i = 0
+		while i < DynamicSpawnItems.length 
+			var[] args = new var[1]
+			args[0] = DynamicSpawnItems[i].iMarkerNumber
+			CallFunctionNoWait("CheckMarker", args)
+			i += 1
+		endWhile
+
+		bCheckingSpawnsNeedCleaning = false
+	endIf
+EndFunction
+
+Function CheckMarker(int iMarker)
+	int retry = 0
+	bool bDynamic = true
+	while bDynamic && retry < 15
+		Utility.Wait(1)
+		bDynamic = IsFurnitureMarkerInUse(iMarker, true)
+		if !bDynamic
+			RemoveDynamicSpawns(iMarker)
+		endIf
+		retry += 1
+	endWhile
 EndFunction
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
-	SpawnCenterPiece()
-	SpawnNavcut()
+	SpawnStaticItems()
 EndFunction
 
 Event OnActivate(ObjectReference akActionRef)
-	CheckIfNeedsFood()
+	CheckIfNeedsDynamicSpawns()
 EndEvent
 
 ; Furniture remains marked as in-use until exit animation finishes, so this will retry up to 15 seconds to remove the food
 Event OnExitFurniture(ObjectReference akReference)
-	CallFunctionNoWait("CheckIfNeedsFoodCleaned", new var[0])
+	CallFunctionNoWait("CheckIfNeedsDynamicSpawnsCleaned", none)
 EndEvent
 
 Event OnLoad()
 	if IsEnabled() && !IsDeleted() && !IsDestroyed()
-		CheckIfNeedsFood()
-		CallFunctionNoWait("CheckIfNeedsFoodCleaned", new var[0])
+		if !bWorkshopObjectPlaced
+			CheckIfNeedsDynamicSpawns()
+		endIf
+		bWorkshopObjectPlaced = false
+		CallFunctionNoWait("CheckIfNeedsDynamicSpawnsCleaned", none)
 	endIf
 EndEvent
 
 Event OnWorkshopObjectPlaced(ObjectReference akReference)
-	Cleanup(true, true, true)
-	SpawnCenterPiece()
-	SpawnNavcut()
+	SpawnStaticItems()
 EndEvent
 
 Event OnWorkshopObjectMoved(ObjectReference akReference)
-	Cleanup(true, true, true)
-	SpawnCenterPiece()
-	SpawnNavcut()
+	Cleanup()
+	SpawnStaticItems()
 EndEvent
 
 Event OnWorkshopObjectDestroyed(ObjectReference akReference)
-	Cleanup(true, true, true)
+	Cleanup()
 EndEvent
 
 Event OnWorkshopObjectGrabbed(ObjectReference akReference)
-	Cleanup(true, true, true)
+	Cleanup()
 EndEvent
 
 Function Delete()
-	Cleanup(true, true, true)
+	Cleanup()
 	Parent.Delete()
 EndFunction
-
