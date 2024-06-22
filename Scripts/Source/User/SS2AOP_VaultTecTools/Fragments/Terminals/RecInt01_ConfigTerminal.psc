@@ -41,4 +41,12 @@ Function Fragment_Terminal_05(ObjectReference akTerminalRef)
 EndFunction
 ;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_Terminal_06
+Function Fragment_Terminal_06(ObjectReference akTerminalRef)
+;BEGIN CODE
+(akTerminalRef as SS2AOP_VaultTecTools:RecInt01_TerminalScript).AddStall(3)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
