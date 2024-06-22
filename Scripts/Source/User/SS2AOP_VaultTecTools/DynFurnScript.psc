@@ -175,7 +175,7 @@ EndFunction
 
 Function Enable(bool abFade = false)
 	Parent.Enable(abFade)
-	SpawnStaticItems()
+	CallFunctionNoWait("SpawnStaticItems", none)
 EndFunction
 
 Event OnActivate(ObjectReference akActionRef)
@@ -213,6 +213,11 @@ EndEvent
 Event OnWorkshopObjectGrabbed(ObjectReference akReference)
 	Cleanup()
 EndEvent
+
+Function Disable(bool abFade = false)
+	Cleanup()
+	Parent.Disable(abFade)
+EndFunction
 
 Function Delete()
 	Cleanup()
