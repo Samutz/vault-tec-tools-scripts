@@ -39,7 +39,7 @@ Function AsyncEnable()
 EndFunction
 
 Function AddStall(int iType = 0)
-	if (plotLinkHolder.kPlotRef as bool)
+	if (plotLinkHolder.kPlotRef as bool) && (StallActivators[iType] as bool)
 		float fPosYDefault = StallActivators[iType].fPosY ; should be -126 for recint01
 
 		int i = 0
