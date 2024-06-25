@@ -1,5 +1,8 @@
 Scriptname SS2AOP_VaultTecTools:DynFurnScript extends ObjectReference
 
+GlobalVariable Property CurrentVersion Auto Const Mandatory 
+Float Property InstalledVersion = 0.0 Auto Hidden ; Version control
+
 Group DynamicFurniture
 	StaticSpawnItemsStruct[] Property StaticSpawnItems Auto Const
 	DynamicSpawnItemsStruct[] Property DynamicSpawnItems Auto
@@ -38,6 +41,17 @@ bool bCheckingSpawnsNeeded = false
 bool bCheckingSpawnsNeedCleaning = false
 bool bWorkshopObjectPlaced = true
 
+; deprecated variables that need to be cleaned up if upgrading
+refFoodSpawnStruct[] FoodSpawnRefs = none
+ObjectReference CenterPieceRef = none
+ObjectReference navcutRef = none
+
+; deprecated struct
+Struct refFoodSpawnStruct
+	int iMarkerNumber
+	ObjectReference refFoodSpawn
+EndStruct
+
 Function SpawnDynamicItems(int iMarkerNumber)
 	if IsEnabled() && !IsDeleted() && !IsDestroyed()
 		int i = DynamicSpawnItems.FindStruct("iMarkerNumber", iMarkerNumber)
@@ -67,6 +81,8 @@ Function SpawnDynamicItems(int iMarkerNumber)
 EndFunction
 
 Function SpawnStaticItems()
+	InstalledVersion = CurrentVersion.GetValue()
+
 	if IsEnabled() && !IsDeleted() && !IsDestroyed() && !bSpawningStaticItems
 		bSpawningStaticItems = true
 
@@ -188,6 +204,10 @@ Event OnExitFurniture(ObjectReference akReference)
 EndEvent
 
 Event OnLoad()
+	if InstalledVersion < CurrentVersion.GetValue()
+		InstallModChanges()
+	endIf
+
 	if IsEnabled() && !IsDeleted() && !IsDestroyed()
 		if !bWorkshopObjectPlaced
 			CheckIfNeedsDynamicSpawns()
@@ -222,4 +242,43 @@ EndFunction
 Function Delete()
 	Cleanup()
 	Parent.Delete()
+EndFunction
+
+Function InstallModChanges()
+	if (InstalledVersion < 2.0)
+
+		if (CenterPieceRef as bool)
+			CenterPieceRef.SetLinkedRef(none, none)
+			CenterPieceRef.Disable(false)
+			CenterPieceRef.Delete()
+			CenterPieceRef = none
+		endIf
+
+		if (FoodSpawnRefs as bool)
+			int i = 0
+			while i < FoodSpawnRefs.length
+				if (FoodSpawnRefs[i].refFoodSpawn as bool)
+					FoodSpawnRefs[i].refFoodSpawn.SetLinkedRef(none, none)
+					FoodSpawnRefs[i].refFoodSpawn.Disable(false)
+					FoodSpawnRefs[i].refFoodSpawn.Delete()
+					FoodSpawnRefs[i].refFoodSpawn = none
+				endIf
+				i += 1
+			endWhile
+			FoodSpawnRefs.Clear()
+		endIf
+
+		if (navcutRef as bool)
+			navcutRef.SetLinkedRef(none, none)
+			navcutRef.Disable(false)
+			navcutRef.Delete()
+			navcutRef = none
+		endIf
+
+		SpawnStaticItems()
+
+	endIf
+
+	; Once complete, flag our version as up to date
+	InstalledVersion = CurrentVersion.GetValue()
 EndFunction
