@@ -26,6 +26,7 @@
 		<Script>SS2AOP_VaultTecTools:RecInt00_TerminalScript</Script>
 		<Script>SS2AOP_VaultTecTools:RecInt01_TerminalScript</Script>
 		<Script>SS2AOP_VaultTecTools:RecInt01_StallScript</Script>
+		<Script>SS2AOP_VaultTecTools:RecInt10_ProjectorScript</Script>
 		<Script>SS2AOP_VaultTecTools:CanarySaveFileMonitor</Script>
 		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:RecInt00_DeskTerminal</Script>
 		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:RecInt01_ConfigTerminal</Script>
