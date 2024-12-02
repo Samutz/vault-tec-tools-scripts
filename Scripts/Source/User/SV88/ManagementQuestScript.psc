@@ -17,6 +17,7 @@ Group Controllers
 	{ Holds the current version of the files, used with local property InstalledVersion to determine what changes to apply }
 	SV88:SlidingDoorQuestScript	Property DoorManager Auto Const Mandatory
 	SV88:SummonManagerQuestScript Property SummonManager Auto Const Mandatory
+	KGHelpers:SettlementMenuManagerIntegration Property SettlementMenuManager Auto Const Mandatory
 	WorkshopParentScript Property WorkshopParent Auto Const Mandatory
 	Message Property InstallVersionMessage Auto Const Mandatory
 	FormList Property VaultSuitsFormList Auto Const
@@ -405,8 +406,13 @@ EndFunction
 Function InstallModChanges()
 	; Make changes here - use format if(InstalledVersion < X.X) do something endif 
 	
-	if InstalledVersion < 1.0001
-		LampFormList.Revert() ; moved the lamps the formlist injection code
+	if InstalledVersion < 1.0104
+		; reinstall menus after plugin name update (ESL)
+		var[] params = none
+		SettlementMenuManager.InstallMenus()
+	elseif InstalledVersion < 1.0001
+		; moved the lamps the formlist injection code
+		LampFormList.Revert() 
 	elseif InstalledVersion < 1.0002
 		; made changes to SummonManagerQuestScript
 		if SummonManager.IsRunning()
