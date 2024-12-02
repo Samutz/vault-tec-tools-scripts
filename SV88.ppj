@@ -1,0 +1,41 @@
+<?xml version='1.0'?>
+<PapyrusProject xmlns="PapyrusProject.xsd"
+   Flags="Institute_Papyrus_Flags.flg"
+   Output=".\Scripts"
+   Asm="Discard"
+   Optimize="true"
+   Release="false"
+   Final="false"
+>
+	<Imports>
+		<Import>..\..\Stock Game\data\Scripts\Source\Base</Import>
+		<Import>..\SS1 Script Sources\Data\Scripts\Source\User</Import>
+		<Import>..\VTT Scripts (SS1)\Scripts\Source\User</Import>
+	</Imports>
+	<Scripts>
+		<Script>SV88:ComInt01_NukaWorldDisplayScript</Script>
+		<Script>SV88:DynFurn_BathroomScript</Script>
+		<Script>SV88:DynFurnScript</Script>
+		<Script>SV88:IndInt00_PowerProviderScript</Script>
+		<Script>SV88:ManagementQuestScript</Script>
+		<Script>SV88:MarInt00_GearDoorScript</Script>
+		<Script>SV88:MarInt00_PlacementHelperScript</Script>
+		<Script>SV88:MarInt00_TurretScript</Script>
+		<Script>SV88:RecInt00_SchoolDeskScript</Script>
+		<Script>SV88:RecInt00_TerminalScript</Script>
+		<Script>SV88:RecInt01_StallScript</Script>
+		<Script>SV88:RecInt01_TerminalScript</Script>
+		<Script>SV88:ResInt04_BabyScript</Script>
+		<Script>SV88:SamutzLibrary</Script>
+		<Script>SV88:SlidingDoorAliasScript</Script>
+		<Script>SV88:SlidingDoorQuestScript</Script>
+		<Script>SV88:SummonManagerQuestScript</Script>
+		<Script>SV88:Fragments:Terminals:RecInt00_DeskTerminal</Script>
+		<Script>SV88:Fragments:Terminals:RecInt01_ConfigTerminal</Script>
+		<Script>SV88:Fragments:Terminals:Settings_SubMenu_Doors</Script>
+		<Script>SV88:Fragments:Terminals:Settings_SubMenu_ExpRestroom</Script>
+		<Script>SV88:Fragments:Terminals:Settings_SubMenu_GearDoor</Script>
+		<Script>SV88:Fragments:Terminals:Settings_SubMenu_SummonSettlers</Script>
+		<Script>SV88:Fragments:Terminals:Settings_SubMenu_VaultSuits</Script>
+	</Scripts>
+</PapyrusProject>
