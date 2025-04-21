@@ -1,5 +1,8 @@
 Scriptname SS2AOP_VaultTecTools:MarInt00_GearDoorScript extends ObjectReference
 
+import SS2AOP_VaultTecTools:SamutzLibrary
+import WorkshopFramework:Library:ThirdParty:Cobb:CobbLibraryRotations
+
 string Property sAnim = "ActivateDoor" Auto const
 Message Property PowerReqMessage Auto Const Mandatory
 Keyword Property kgSim_PlotSpawned Auto Const Mandatory
@@ -24,7 +27,7 @@ Function AsyncEnable()
 			iDoorState = 0
 		endIf
 
-		plotRef = (SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:PlotLinkHolder).kPlotRef
+		plotRef = (GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:PlotLinkHolder).kPlotRef
 		bPowered = plotRef.IsPowered()
 
 		RegisterForRemoteEvent(plotRef, "OnPowerOn")
@@ -73,26 +76,26 @@ Event OnWorkshopObjectMoved(ObjectReference akReference)
 	int answer = ConfirmPlotMove.Show()
 	if answer == 1 ; yes
 		Float[] OriginalPosition = new Float[3]
-		Float[] OriginalRotation = new Float[3]
 		OriginalPosition[0] = GetPositionX()
 		OriginalPosition[1] = GetPositionY()
 		OriginalPosition[2] = GetPositionZ()
+		Float[] OriginalRotation = new Float[3]
 		OriginalRotation[0] = GetAngleX()
 		OriginalRotation[1] = GetAngleY()
 		OriginalRotation[2] = GetAngleZ()
-
 		Float[] OffsetPosition = new Float[3]
-		Float[] OffsetRotation = new Float[3]
 		OffsetPosition[0] = -8.0
 		OffsetPosition[1] = -128.0
 		OffsetPosition[2] = 6.75
+		Float[] OffsetRotation = new Float[3]
 		OffsetRotation[0] = 0.0
 		OffsetRotation[1] = 0.0
 		OffsetRotation[2] = 180.0
+		
+		Float[] TargetCoordinates = GetCoordinatesRelativeToBase(OriginalPosition, OriginalRotation, OffsetPosition, OffsetRotation)
 
-		Float[] TargetCoordinates = WorkshopFramework:Library:ThirdParty:Cobb:CobbLibraryRotations.GetCoordinatesRelativeToBase(OriginalPosition, OriginalRotation, OffsetPosition, OffsetRotation)
-		plotRef.TranslateTo(TargetCoordinates[0], TargetCoordinates[1], TargetCoordinates[2], TargetCoordinates[3], TargetCoordinates[4], TargetCoordinates[5], 500.0)
-
+		plotRef.SetPosition(TargetCoordinates[0], TargetCoordinates[1], TargetCoordinates[2])
+		plotRef.SetAngle(TargetCoordinates[3], TargetCoordinates[4], TargetCoordinates[5])
 		plotRef.OnWorkshopObjectMoved(akReference)
 	endIf
 EndEvent
