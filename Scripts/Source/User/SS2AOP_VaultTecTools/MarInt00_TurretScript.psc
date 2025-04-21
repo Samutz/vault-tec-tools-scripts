@@ -1,15 +1,13 @@
 Scriptname SS2AOP_VaultTecTools:MarInt00_TurretScript extends workshopobjectactorscript
 
+import SS2AOP_VaultTecTools:SamutzLibrary
+
 Keyword Property kwDoor Auto Const Mandatory
 Keyword Property kgSim_PlotSpawned Auto Const Mandatory
 GlobalVariable Property AutomateDoorSetting Auto Const Mandatory
 
 SS2AOP_VaultTecTools:MarInt00_GearDoorScript aDoorRef = none
 
-Float[] OriginalPosition = none
-Float[] OriginalRotation = none
-
-Bool Property bIsMoved = false Auto Hidden
 bool Property bPowered = false Auto Hidden
 ObjectReference Property plotRef = none Auto Hidden
 
@@ -23,30 +21,14 @@ EndFunction
 Function AsyncEnable()
     if !bEnabled
         bEnabled = true
-
-		OriginalPosition = new Float[3]
-		OriginalRotation = new Float[3]
 		
 		if !IsDeleted() && !IsDestroyed()
-			OriginalPosition[0] = GetPositionX()
-			OriginalPosition[1] = GetPositionY()
-			OriginalPosition[2] = GetPositionZ()
-			OriginalRotation[0] = GetAngleX()
-			OriginalRotation[1] = GetAngleY()
-			OriginalRotation[2] = GetAngleZ()
-		
-			int retry = 0
-			while !bIsMoved && retry < 5
-				bIsMoved = FixRotation()
-				if !bIsMoved
-					Utility.Wait(1)
-					retry += 1
-				endIf
-			endWhile
 			
-			ObjectReference plotHolderRef = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) 
+			ObjectReference plotHolderRef = GetParentPlot(Self, kgSim_PlotSpawned) 
 			plotRef = plotHolderRef.GetPropertyValue("kPlotRef") as ObjectReference
 			ObjectReference[] plotSpawns = plotHolderRef.GetLinkedRefChildren(kgSim_PlotSpawned)
+			
+			CallFunctionNoWait("FixRotation", none)
 
 			bPowered = plotRef.IsPowered()
 			SetUnconscious(!bPowered)
@@ -76,7 +58,6 @@ Function GetAssigned()
 EndFunction
 
 Function Delete()
-	bIsMoved = false
 	aDoorRef = none
 	UnregisterForRemoteEvent(plotRef, "OnPowerOn")
 	UnregisterForRemoteEvent(plotRef, "OnPowerOff")
@@ -106,30 +87,8 @@ EndFunction
 
 bool Function FixRotation()
 	if(is3dLoaded() && isEnabled())
-		bIsMoved = false
-		TranslateTo(OriginalPosition[0], OriginalPosition[1], OriginalPosition[2], OriginalRotation[0], OriginalRotation[1], OriginalRotation[2], 500.0)
-		
-		Float[] OffsetPosition = new Float[3]
-		Float[] OffsetRotation = new Float[3]
-		OffsetPosition[0] = 0.0
-		OffsetPosition[1] = 0.0
-		OffsetPosition[2] = 0.0
-		OffsetRotation[0] = 90.0
-		OffsetRotation[1] = -90.0
-		OffsetRotation[2] = 0
-		
-		Float[] TargetCoordinates = WorkshopFramework:Library:ThirdParty:Cobb:CobbLibraryRotations.GetCoordinatesRelativeToBase(OriginalPosition, OriginalRotation, OffsetPosition, OffsetRotation)
-
-		if TargetCoordinates[3] < -89.0 && TargetCoordinates[3] > -91.0 ; Not always exactly -90
-			TargetCoordinates[5] += 180.0
-		endIf
-		if TargetCoordinates[3] < 1.0 && TargetCoordinates[3] > -1.0 ; Not always exactly 0
-			TargetCoordinates[5] += 90.0
-		endIf
-		TranslateTo(TargetCoordinates[0], TargetCoordinates[1], TargetCoordinates[2], TargetCoordinates[3], TargetCoordinates[4], TargetCoordinates[5], 500.0)
-		bIsMoved = true
+        TranslateTo(GetPositionX(), GetPositionY(), GetPositionZ(), plotRef.GetAngleX() + 90.0, plotRef.GetAngleY() + 90.0, plotRef.GetAngleZ() + 0.0, 500.0)
 	endif
-	return bIsMoved
 EndFunction
 
 Event ObjectReference.OnPowerOn(ObjectReference akSender, ObjectReference akPowerGenerator)
