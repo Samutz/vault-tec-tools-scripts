@@ -35,11 +35,20 @@ Function AsyncEnable()
 	endIf
 EndFunction
 
-Function Delete()
+Function Cleanup()
 	iDoorState = 0
 	UnregisterForRemoteEvent(plotRef, "OnPowerOn")
 	UnregisterForRemoteEvent(plotRef, "OnPowerOff")
+EndFunction
+
+Function Delete()
+	Cleanup()
 	Parent.Delete()
+EndFunction
+
+Function DeleteWhenAble()
+	Cleanup()
+	Parent.DeleteWhenAble()
 EndFunction
 
 Event OnActivate(ObjectReference akActionRef)

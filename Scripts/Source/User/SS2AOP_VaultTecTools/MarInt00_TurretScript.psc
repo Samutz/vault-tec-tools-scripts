@@ -57,11 +57,20 @@ Function GetAssigned()
 	Debug.Notification("Assigned: "+IsAssigned())
 EndFunction
 
-Function Delete()
+Function Cleanup()
 	aDoorRef = none
 	UnregisterForRemoteEvent(plotRef, "OnPowerOn")
 	UnregisterForRemoteEvent(plotRef, "OnPowerOff")
+EndFunction
+
+Function Delete()
+	Cleanup()
 	Parent.Delete()
+EndFunction
+
+Function DeleteWhenAble()
+	Cleanup()
+	Parent.DeleteWhenAble()
 EndFunction
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)

@@ -84,3 +84,7 @@ Function Delete()
 	Parent.Delete()
 EndFunction
 
+Function DeleteWhenAble()
+	Cleanup()
+	Parent.DeleteWhenAble()
+EndFunction

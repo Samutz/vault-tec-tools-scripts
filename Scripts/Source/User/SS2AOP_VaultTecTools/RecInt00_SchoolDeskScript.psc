@@ -105,3 +105,8 @@ Function Delete()
 	Cleanup(true, true)
 	Parent.Delete()
 EndFunction
+
+Function DeleteWhenAble()
+	Cleanup(true, true)
+	Parent.DeleteWhenAble()
+EndFunction
