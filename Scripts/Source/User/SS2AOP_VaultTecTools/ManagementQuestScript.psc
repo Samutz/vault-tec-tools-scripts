@@ -396,7 +396,7 @@ Function InstallModChanges()
 
 	; Once complete, flag our version as up to date
 	InstalledVersion = CurrentVersion.GetValue()
-	InstallVersionMessage.Show(InstalledVersion)
+	;InstallVersionMessage.Show(InstalledVersion)
 EndFunction
 
 ; Utility function to wait for edit lock
