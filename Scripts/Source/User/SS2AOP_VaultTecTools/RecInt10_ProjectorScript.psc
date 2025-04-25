@@ -46,23 +46,25 @@ Function AsyncEnable()
 EndFunction
 
 Function NextSlide()
-    ClearSlide()
+    if Is3DLoaded()
+        ClearSlide()
 
-    iCurrentSlide += 1
-    if !Slides[iCurrentSlide]
-        iCurrentSlide = 0
-    endIf
+        iCurrentSlide += 1
+        if !Slides[iCurrentSlide]
+            iCurrentSlide = 0
+        endIf
 
-    if Slides[iCurrentSlide]
-        OBJProjectorNext.play(Self)
-        woTemplate.ObjectForm = Slides[iCurrentSlide]
-        plotLinkHolder.kPlotRef.SpawnStageItem(woTemplate, plotLinkHolder.kWorkshopRef, (plotLinkHolder.kPlotRef as ObjectReference))
-        StartTimer(iTimeBetweenSlides, iUpdateTimer)
+        if Slides[iCurrentSlide]
+            OBJProjectorNext.play(Self)
+            woTemplate.ObjectForm = Slides[iCurrentSlide]
+            plotLinkHolder.kPlotRef.SpawnStageItem(woTemplate, plotLinkHolder.kWorkshopRef, (plotLinkHolder.kPlotRef as ObjectReference))
+            StartTimer(iTimeBetweenSlides, iUpdateTimer)
+        endIf
     endIf
 EndFunction
 
 Event OnTimer(Int aiTimerID)
-    if aiTimerID == iUpdateTimer
+    if aiTimerID == iUpdateTimer && Is3DLoaded()
         NextSlide()
     endIf
 EndEvent
@@ -98,6 +100,11 @@ EndFunction
 Function Delete()
 	Cleanup()
 	Parent.Delete()
+EndFunction
+
+Function DeleteWhenAble()
+	Cleanup()
+	Parent.DeleteWhenAble()
 EndFunction
 
 Function Disable(bool abFade = false)
