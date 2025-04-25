@@ -252,7 +252,9 @@ Function CheckChanceNoneQuests()
 		i += 1
 	endWhile
 	
-	VaultSuitsFormList.Revert() ; used by both sections below
+	if VaultSuitsFormList != none
+		VaultSuitsFormList.Revert() ; used by both sections below
+	endIf
 	
 	; Vault 118 Stuff
 	if PluginDefinitions[V118_iPluginNameIndex].bInstalled
@@ -289,13 +291,17 @@ Function InjectDLCObjects()
 	; clean lists incase of injection changes or DLC removal
 	int i = 0
 	while i < LeveledLists.length
-		LeveledLists[i].Revert()
+		if LeveledLists[i] != none
+			LeveledLists[i].Revert()
+		endIf
 		i += 1
 	endWhile
 	
 	i = 0
 	while i < FormLists.length
-		FormLists[i].Revert()
+		if FormLists[i] != none
+			FormLists[i].Revert()
+		endIf
 		i += 1
 	endWhile
 	
