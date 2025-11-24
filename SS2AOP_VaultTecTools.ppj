@@ -13,26 +13,7 @@
 		<Import>..\WSFW Script Sources (Dev)\Scripts\Source\User</Import>
 		<Import>..\Vault-Tec Tools - Script Sources (Dev)\Scripts\Source\User</Import>
 	</Imports>
-	<Scripts>
-		<Script>SS2AOP_VaultTecTools:SamutzLibrary</Script>
-		<Script>SS2AOP_VaultTecTools:DynFurnScript</Script>
-		<Script>SS2AOP_VaultTecTools:ManagementQuestScript</Script>
-		<Script>SS2AOP_VaultTecTools:DynFurn_BathroomScript</Script>
-		<Script>SS2AOP_VaultTecTools:SummonManagerQuestScript</Script>
-		<Script>SS2AOP_VaultTecTools:MarInt00_GearDoorScript</Script>
-		<Script>SS2AOP_VaultTecTools:MarInt00_TurretScript</Script>
-		<Script>SS2AOP_VaultTecTools:MarInt00_PlacementHelperScript</Script>
-		<Script>SS2AOP_VaultTecTools:RecInt00_SchoolDeskScript</Script>
-		<Script>SS2AOP_VaultTecTools:RecInt00_TerminalScript</Script>
-		<Script>SS2AOP_VaultTecTools:RecInt01_TerminalScript</Script>
-		<Script>SS2AOP_VaultTecTools:RecInt01_StallScript</Script>
-		<Script>SS2AOP_VaultTecTools:RecInt10_ProjectorScript</Script>
-		<Script>SS2AOP_VaultTecTools:CanarySaveFileMonitor</Script>
-		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:RecInt00_DeskTerminal</Script>
-		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:RecInt01_ConfigTerminal</Script>
-		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:Settings_SubMenu_VaultSuits</Script>
-		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:Settings_SubMenu_SummonSettlers</Script>
-		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:Settings_SubMenu_GearDoor</Script>
-		<Script>SS2AOP_VaultTecTools:Fragments:Terminals:Settings_SubMenu_ExpRestroom</Script>
-	</Scripts>
+	<Folders>
+		<Folder>.\Scripts\Source\User</Folder>
+	</Folders>
 </PapyrusProject>
