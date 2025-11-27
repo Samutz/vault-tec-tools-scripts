@@ -1,7 +1,8 @@
 Scriptname SS2AOP_VaultTecTools:SynthMannequinScript extends ObjectReference
 
-ActorBase Property actorMannequin Auto Mandatory
-Outfit Property ofOutfit Auto
+ActorBase Property actorMannequin Auto Const Mandatory
+Outfit Property ofOutfit Auto Const
+bool Property bSetHeadtracking = true Auto Const Mandatory
 
 bool bEnabled = false
 Actor akMannequin
@@ -21,10 +22,11 @@ Function AsyncEnable()
             akMannequin.SetOutfit(ofOutfit)
         endIf
         akMannequin.Enable(false)
-        akMannequin.SetHeadTracking(false)
+        akMannequin.SetHeadTracking(bSetHeadtracking)
         akMannequin.SetRestrained(true)
         akMannequin.BlockActivation(true, false)
         akMannequin.SetGhost(true)
+        akMannequin.SetScale(GetScale())
 
         SetActorRefOwner(akMannequin)
 
