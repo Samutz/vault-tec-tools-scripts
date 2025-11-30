@@ -1,8 +1,8 @@
-Scriptname SS2AOP_VaultTecTools:SynthMannequinScript extends ObjectReference
+Scriptname SS2AOP_VaultTecTools:MannequinFurnitureScript extends ObjectReference
 
 ActorBase Property actorMannequin Auto Const Mandatory
 Outfit Property ofOutfit Auto Const
-bool Property bSetHeadtracking = true Auto Const Mandatory
+bool Property bSetHeadtracking = true Auto Const
 
 bool bEnabled = false
 Actor akMannequin
