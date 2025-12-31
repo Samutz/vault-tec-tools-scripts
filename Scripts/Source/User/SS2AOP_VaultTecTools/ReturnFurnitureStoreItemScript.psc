@@ -1,6 +1,6 @@
 ScriptName SS2AOP_VaultTecTools:ReturnFurnitureStoreItemScript Extends ObjectReference
 
-SimSettlementsV2:MiscObjects:FurnitureStoreItem Property FurnStoreItemMiscItem Auto Const Mandatory
+MiscObject Property FurnStoreItemMiscItem Auto Const Mandatory
 
 Event OnWorkshopObjectDestroyed(ObjectReference akActionRef)
     Actor PlayerRef = Game.GetPlayer()
