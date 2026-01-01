@@ -14,6 +14,7 @@ Scriptname SS2AOP_VaultTecTools:ManagementQuestScript extends Quest
 ; ---------------------------------------------
 Group Controllers
 	GlobalVariable Property CurrentVersion Auto Const Mandatory
+	GlobalVariable Property VaultTecCraftingUnlocked Auto Mandatory
 	{ Holds the current version of the files, used with local property InstalledVersion to determine what changes to apply }
 	WorkshopFramework:Library:WorkshopMenuInjectionQuest Property SettlementMenuInjector Auto Const Mandatory
 	WorkshopParentScript Property WorkshopParent Auto Const Mandatory
@@ -393,6 +394,11 @@ Function InstallModChanges()
 		; VTT for SS1 leftover, not needed on any version of VTT for SS2
 		UnregisterForRemoteEvent(WorkshopParent.WorkshopsCollection, "OnCellLoad") 
 	EndIf
+
+	if InstalledVersion > 0.0 && InstalledVersion < 3.0
+		; auto unlock everything for 1.x and 2.x players
+		VaultTecCraftingUnlocked.SetValue(1.0)
+	endIf
 
 	; Once complete, flag our version as up to date
 	InstalledVersion = CurrentVersion.GetValue()
