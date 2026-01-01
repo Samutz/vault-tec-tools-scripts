@@ -14,13 +14,14 @@ Scriptname SS2AOP_VaultTecTools:ManagementQuestScript extends Quest
 ; ---------------------------------------------
 Group Controllers
 	GlobalVariable Property CurrentVersion Auto Const Mandatory
-	GlobalVariable Property VaultTecCraftingUnlocked Auto Mandatory
+	GlobalVariable Property VaultTecCraftingUnlockedGlobal Auto Mandatory
 	{ Holds the current version of the files, used with local property InstalledVersion to determine what changes to apply }
 	WorkshopFramework:Library:WorkshopMenuInjectionQuest Property SettlementMenuInjector Auto Const Mandatory
 	WorkshopParentScript Property WorkshopParent Auto Const Mandatory
 	Message Property InstallVersionMessage Auto Const Mandatory
 	FormList Property VaultSuitsFormList Auto Const
 	WorkshopFramework:Library:MasterQuest Property SS2_Main Auto Const Mandatory
+	SimSettlementsV2:Quests:UnlockManager Property SS2_UnlockManager Auto Const Mandatory
 EndGroup
 
 Group InjectionObjects
@@ -382,6 +383,14 @@ Function UnlockVaultSuitGlobal(int iVaultNo)
 	endIf
 EndFunction
 
+Function UnlockAllFeaturesGlobal()
+	;Debug.TraceUser(LogName, "UnlockAllFeaturesGlobal():")
+	;Debug.TraceUser(LogName, "  VaultTecCraftingUnlockedGlobal form: "+VaultTecCraftingUnlockedGlobal)
+	;Debug.TraceUser(LogName, "  VaultTecCraftingUnlockedGlobal value: "+VaultTecCraftingUnlockedGlobal.GetValue())
+	VaultTecCraftingUnlockedGlobal.SetValue(1.0)
+	SS2_UnlockManager.TryToTriggerUnlocks()
+EndFunction
+
 ;/
 	MESSAGE HANDLING
 /;
@@ -397,7 +406,7 @@ Function InstallModChanges()
 
 	if InstalledVersion > 0.0 && InstalledVersion < 3.0
 		; auto unlock everything for 1.x and 2.x players
-		VaultTecCraftingUnlocked.SetValue(1.0)
+		UnlockAllFeaturesGlobal()
 	endIf
 
 	; Once complete, flag our version as up to date
