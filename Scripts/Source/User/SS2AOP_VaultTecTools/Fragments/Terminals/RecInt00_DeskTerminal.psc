@@ -12,7 +12,7 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_Terminal_02
 Function Fragment_Terminal_02(ObjectReference akTerminalRef)
 ;BEGIN CODE
-(akTerminalRef as SS2AOP_VaultTecTools:RecInt00_TerminalScript).RemoveDeskRow()
+(akTerminalRef as SS2AOP_VaultTecTools:RecInt00_TerminalScript).RemoveDeskRow(true)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -28,7 +28,7 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_Terminal_04
 Function Fragment_Terminal_04(ObjectReference akTerminalRef)
 ;BEGIN CODE
-(akTerminalRef as SS2AOP_VaultTecTools:RecInt00_TerminalScript).RemoveAllDesks()
+(akTerminalRef as SS2AOP_VaultTecTools:RecInt00_TerminalScript).RemoveAllDesks(true)
 ;END CODE
 EndFunction
 ;END FRAGMENT
