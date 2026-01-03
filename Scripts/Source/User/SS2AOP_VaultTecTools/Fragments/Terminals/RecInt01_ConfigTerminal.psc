@@ -12,7 +12,7 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_Terminal_02
 Function Fragment_Terminal_02(ObjectReference akTerminalRef)
 ;BEGIN CODE
-(akTerminalRef as SS2AOP_VaultTecTools:RecInt01_TerminalScript).RemoveStall()
+(akTerminalRef as SS2AOP_VaultTecTools:RecInt01_TerminalScript).RemoveStall(true)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -28,7 +28,7 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_Terminal_04
 Function Fragment_Terminal_04(ObjectReference akTerminalRef)
 ;BEGIN CODE
-(akTerminalRef as SS2AOP_VaultTecTools:RecInt01_TerminalScript).RemoveAllStalls()
+(akTerminalRef as SS2AOP_VaultTecTools:RecInt01_TerminalScript).RemoveAllStalls(true)
 ;END CODE
 EndFunction
 ;END FRAGMENT

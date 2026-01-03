@@ -37,3 +37,24 @@ ObjectReference[] Function CleanUpChildSpawns(ObjectReference parentRef, Keyword
 		i += 1
 	endWhile
 EndFunction
+
+int Function EncodeBase4(int[] values) Global
+    int result = 0
+    int i = 0
+    while i < values.Length
+        result = result * 4 + values[i]
+        i += 1
+	endWhile
+    return result
+EndFunction
+
+int[] Function DecodeBase4(int iEncoded, int iLength) Global
+    int[] result = new int[iLength]
+    int i = iLength - 1
+    while i >= 0
+        result[i] = iEncoded % 4
+        iEncoded = iEncoded / 4
+        i -= 1
+	endWhile
+    return result
+EndFunction

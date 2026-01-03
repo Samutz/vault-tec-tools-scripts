@@ -4,12 +4,15 @@ WorkshopFramework:Library:DataStructures:WorldObject[] Property StallActivators 
 { ALWAYS SET: fExtraDataFlag = stall width, fPosY = -126, fPosX = 144, fAngleZ = 90 }
 Keyword Property kgSim_PlotSpawned Auto Const Mandatory
 GlobalVariable Property DummyGV Auto Const Mandatory
+ActorValue Property StallCountAV Auto Mandatory
+ActorValue Property StallDataAV Auto Mandatory
 
 SimSettlementsV2:ObjectReferences:plotlinkholder plotLinkHolder = none
 
 bool Property bEnabled = false Auto Hidden
 
 int[] iCounts = none
+int[] iStallData = none
 
 Event OnActivate(ObjectReference akBruh)
 	DummyGV.SetValue(iCounts[0] as float)
@@ -25,18 +28,57 @@ Function AsyncEnable()
         bEnabled = true
 
 		iCounts = new int[StallActivators.length + 1]
+		iStallData = new int[0]
 
 		if !IsDeleted() && !IsDestroyed() 
 			plotLinkHolder = SS2AOP_VaultTecTools:SamutzLibrary.GetParentPlot(Self, kgSim_PlotSpawned) as SimSettlementsV2:ObjectReferences:plotlinkholder
 			SetActorRefOwner(Game.GetPlayer())
+
+			AddStallsFromDataAV()
 			
 			if iCounts[0] == 0
+				AddStall(3)
 				AddStall(0)
 				AddStall(0)
 			endIf
 		endIf
 	endIf
 EndFunction
+
+Function AddStallsFromDataAV()
+	int[] iRestoreData = SS2AOP_VaultTecTools:SamutzLibrary.DecodeBase4(plotLinkHolder.kPlotRef.GetValue(StallDataAV) as int, plotLinkHolder.kPlotRef.GetValue(StallCountAV) as int)
+	int i = 0
+	;Debug.MessageBox("restore data: "+iRestoreData+" | restore count: "+iRestoreData.Length)
+	while i < iRestoreData.Length
+		AddStall(iRestoreData[i])
+		i += 1
+	endWhile
+EndFunction
+
+Function UpdateAVs()
+	; trim array to 12, since storing this array as a AV float is limited to the engine's max float size
+	int[] iStallDataTrimmed = iStallData
+	while iStallDataTrimmed.Length > 12
+		iStallDataTrimmed.RemoveLast()
+	endWhile
+
+	;Debug.MessageBox("update data: "+SS2AOP_VaultTecTools:SamutzLibrary.EncodeBase4(iStallDataTrimmed)+" | update count: "+iStallDataTrimmed.Length)
+	float fStallData = SS2AOP_VaultTecTools:SamutzLibrary.EncodeBase4(iStallDataTrimmed) as float
+	float fStallCount = iStallDataTrimmed.Length as float
+	;Debug.MessageBox("float data: "+fStallData+" | float count: "+fStallCount)
+	plotLinkHolder.kPlotRef.SetValue(StallDataAV, fStallData)
+	plotLinkHolder.kPlotRef.SetValue(StallCountAV, fStallCount)
+	;Debug.MessageBox("updated data: "+(plotLinkHolder.kPlotRef.GetValue(StallDataAV))+" | updated count: "+(plotLinkHolder.kPlotRef.GetValue(StallCountAV)))
+	;Utility.Wait(1)
+EndFunction
+
+;/
+iTypes:
+	0 = stall toilet
+	1 = shower stall
+	2 = urinal
+	3 = sink
+/;
 
 Function AddStall(int iType = 0)
 	if (plotLinkHolder.kPlotRef as bool) && (StallActivators[iType] as bool)
@@ -56,10 +98,12 @@ Function AddStall(int iType = 0)
 		iCounts[0] += 1
 		iCounts[iType+1] += 1
 		DummyGV.SetValue(iCounts[0] as float)
+		iStallData.Add(iType)
+		UpdateAVs()
 	endIf
 EndFunction
 
-Function RemoveStall()
+Function RemoveStall(bool bUpdateAVs = true)
 	if iCounts[0] > 0
 		ObjectReference[] plotSpawns = plotLinkHolder.GetLinkedRefChildren(kgSim_PlotSpawned)
 		int i = plotSpawns.Length - 1
@@ -75,11 +119,15 @@ Function RemoveStall()
 			iCounts[iType+1] -= 1
 			DummyGV.SetValue(iCounts[0] as float)
 			i -= 1
+			if bUpdateAVs
+				iStallData.RemoveLast()
+				UpdateAVs()
+			endIf
 		endWhile
 	endIf
 EndFunction
 
-Function RemoveAllStalls()
+Function RemoveAllStalls(bool bUpdateAVs = true)
 	if iCounts[0] > 0
 		ObjectReference[] plotSpawns = plotLinkHolder.GetLinkedRefChildren(kgSim_PlotSpawned)
 		int i = plotSpawns.Length - 1
@@ -93,10 +141,14 @@ Function RemoveAllStalls()
 	endIf
 	iCounts = new int[StallActivators.length + 1]
 	DummyGV.SetValue(iCounts[0] as float)
+	if bUpdateAVs
+		iStallData.Clear()
+		UpdateAVs()
+	endIf
 EndFunction
 
 Function Cleanup()
-	RemoveAllStalls()
+	RemoveAllStalls(false)
 EndFunction
 
 Function Delete()
