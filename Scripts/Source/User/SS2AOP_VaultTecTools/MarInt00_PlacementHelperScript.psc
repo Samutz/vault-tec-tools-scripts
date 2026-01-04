@@ -8,5 +8,8 @@ Event OnWorkshopObjectPlaced(ObjectReference akReference)
 		SimSettlementsV2:ObjectReferences:SimPlot plotRef = WorkshopFramework:WSFW_API.CreateSettlementObject(PlotWorldObject, akReference as WorkshopScript, Self) as SimSettlementsV2:ObjectReferences:SimPlot
 		plotRef.ForcedPlan = AssignedPlanWeapon
 		WorkshopFramework:WSFW_API.RemoveSettlementObject(Self as ObjectReference)
+		if ( WorkshopFramework:WSFW_API.IsF4SERunning() )
+			plotRef.CallFunction("TransmitConnectedPower", none)
+		endif
 	endIf
 EndEvent
