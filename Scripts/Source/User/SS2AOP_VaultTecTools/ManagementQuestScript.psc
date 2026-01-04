@@ -57,6 +57,7 @@ Group Settings
 	GlobalVariable Property Settings_MarInt00_AutomateGearDoor Auto Const
 	GlobalVariable Property Settings_RecInt01_NoLock Auto Const
 	GlobalVariable Property Settings_RecInt01_UseCWSS Auto Const
+	GlobalVariable Property Settings_EnableInteriorSnapPower Auto Mandatory
 EndGroup
 
 ; ---------------------------------------------
@@ -364,6 +365,10 @@ Function ToggleSettings_RecInt01_NoLock()
 	ToggleGlobal(Settings_RecInt01_NoLock)
 EndFunction
 
+Function ToggleSettings_EnableInteriorSnapPower()
+	ToggleGlobal(Settings_EnableInteriorSnapPower)
+EndFunction
+
 Function ToggleSettings_RecInt01_UseCWSS()
 	ToggleGlobal(Settings_RecInt01_UseCWSS)
 EndFunction
@@ -384,9 +389,7 @@ Function UnlockVaultSuitGlobal(int iVaultNo)
 EndFunction
 
 Function UnlockAllFeaturesGlobal()
-	;Debug.TraceUser(LogName, "UnlockAllFeaturesGlobal():")
-	;Debug.TraceUser(LogName, "  VaultTecCraftingUnlockedGlobal form: "+VaultTecCraftingUnlockedGlobal)
-	;Debug.TraceUser(LogName, "  VaultTecCraftingUnlockedGlobal value: "+VaultTecCraftingUnlockedGlobal.GetValue())
+	Debug.TraceUser(LogName, "UnlockAllFeaturesGlobal()")
 	VaultTecCraftingUnlockedGlobal.SetValue(1.0)
 	SS2_UnlockManager.TryToTriggerUnlocks()
 EndFunction
@@ -399,13 +402,19 @@ EndFunction
 Function InstallModChanges()
 	; Make changes here - use format if(InstalledVersion < X.X) do something endif 
 
+	Debug.TraceUser(LogName, "InstallModChanges()")
+	Debug.TraceUser(LogName, "  InstalledVersion: "+InstalledVersion)
+	Debug.TraceUser(LogName, "  CurrentVersion: "+CurrentVersion.GetValue())
+
 	if (InstalledVersion < 2.0)
 		; VTT for SS1 leftover, not needed on any version of VTT for SS2
+		Debug.TraceUser(LogName, "  Unregistering unused event from 1.x")
 		UnregisterForRemoteEvent(WorkshopParent.WorkshopsCollection, "OnCellLoad") 
 	EndIf
 
 	if InstalledVersion > 0.0 && InstalledVersion < 3.0
 		; auto unlock everything for 1.x and 2.x players
+		Debug.TraceUser(LogName, "  Unlocking VT crafting for returning player")
 		UnlockAllFeaturesGlobal()
 	endIf
 
