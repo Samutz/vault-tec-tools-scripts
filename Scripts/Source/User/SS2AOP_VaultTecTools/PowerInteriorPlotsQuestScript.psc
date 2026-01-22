@@ -62,6 +62,10 @@ Function AddPowerAV(ObjectReference akPlotRef, ObjectReference akWorkshopRef)
     ;Debug.TraceUser(sLogName, "AddPowerAV()")
     ;Debug.TraceUser(sLogName, "  akSender: "+akPlotRef)
     ;Debug.TraceUser(sLogName, "  akPlot: "+akWorkshopRef)
+    if !IsPowerGridToolsRunning(akWorkshopRef) ; f4se plugin not available
+        ;Debug.TraceUser(sLogName, " Failed F4SE plugin check")
+        return
+    endIf
     if !akPlotRef.HasKeyword(SS2_PlotSize_Int) || !akPlotRef.HasKeyword(SS2_Tag_Plot) ; object is not interior plot
         ;Debug.TraceUser(sLogName, " Failed keyword check")
         return
@@ -70,12 +74,8 @@ Function AddPowerAV(ObjectReference akPlotRef, ObjectReference akWorkshopRef)
         ;Debug.TraceUser(sLogName, " Failed setting check")
         return
     endIf
-    if akPlotRef.GetValue(WorkshopSnapTransmitsPower) == 1.0 ; object already has av or f4se plugin not available
+    if akPlotRef.GetValue(WorkshopSnapTransmitsPower) == 1.0 ; object already has av
         ;Debug.TraceUser(sLogName, " Failed AV check")
-        return
-    endIf
-    if !IsPowerGridToolsRunning(akWorkshopRef) ; object already has av or f4se plugin not available
-        ;Debug.TraceUser(sLogName, " Failed F4SE plugin check")
         return
     endIf
     akPlotRef.SetValue(WorkshopSnapTransmitsPower, 1)
