@@ -20,8 +20,8 @@ Group Controllers
 	WorkshopParentScript Property WorkshopParent Auto Const Mandatory
 	Message Property InstallVersionMessage Auto Const Mandatory
 	FormList Property VaultSuitsFormList Auto Const
-	WorkshopFramework:Library:MasterQuest Property SS2_Main Auto Const Mandatory
-	SimSettlementsV2:Quests:UnlockManager Property SS2_UnlockManager Auto Const Mandatory
+	SimSettlementsV2:Quests:SS2Main Property SS2_Main Auto Const Mandatory
+	;SimSettlementsV2:Quests:UnlockManager Property SS2_UnlockManager Auto Const Mandatory
 EndGroup
 
 Group InjectionObjects
@@ -391,7 +391,8 @@ EndFunction
 Function UnlockAllFeaturesGlobal()
 	Debug.TraceUser(LogName, "UnlockAllFeaturesGlobal()")
 	VaultTecCraftingUnlockedGlobal.SetValue(1.0)
-	SS2_UnlockManager.TryToTriggerUnlocks()
+	SS2_Main.UnlockManager.TryToTriggerUnlocks()
+	SS2_Main.PlotManager.ResetAllCaches()
 EndFunction
 
 ;/
