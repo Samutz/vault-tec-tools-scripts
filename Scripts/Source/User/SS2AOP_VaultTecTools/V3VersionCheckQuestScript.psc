@@ -24,9 +24,11 @@ EndEvent
 
 Function Startup()
     Debug.TraceUser(LogName, "SS2AOP_VaultTecTools2.esp is installed, checking versions...")
+    Debug.TraceUser(LogName, "  SS2AOP_VaultTecTools.esp version: "+CurrentVersionV3.GetValue())
     Debug.TraceUser(LogName, "  SS2AOP_VaultTecTools2.esp version: "+CurrentVersion.GetValue())
-    Debug.TraceUser(LogName, "  SS2AOP_VaultTecTools.esp expects version: "+CurrentVersionV3.GetValue())
-    if CurrentVersionV3.GetValue() != CurrentVersion.GetValue()
+
+    if CurrentVersionV3 == none || CurrentVersionV3.GetValue() != CurrentVersion.GetValue()
+        Debug.TraceUser(LogName, "  One of the plugins is out of date")
         VersionMismatchMessage.Show()
         Game.QuitToMainMenu()
     endif

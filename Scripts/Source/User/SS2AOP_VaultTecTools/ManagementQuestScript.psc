@@ -402,11 +402,11 @@ EndFunction
 
 Function InstallModChanges()
 	; Make changes here - use format if(InstalledVersion < X.X) do something endif 
-
 	Debug.TraceUser(LogName, "InstallModChanges()")
 	Debug.TraceUser(LogName, "  InstalledVersion: "+InstalledVersion)
 	Debug.TraceUser(LogName, "  CurrentVersion: "+CurrentVersion.GetValue())
 
+	; switched to int version with 3.0.5, InstalledVersion would still be old float for these
 	if (InstalledVersion < 2.0)
 		; VTT for SS1 leftover, not needed on any version of VTT for SS2
 		Debug.TraceUser(LogName, "  Unregistering unused event from 1.x")
