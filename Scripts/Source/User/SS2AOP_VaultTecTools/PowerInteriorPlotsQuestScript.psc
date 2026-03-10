@@ -59,23 +59,23 @@ Event ObjectReference.OnWorkshopObjectGrabbed(ObjectReference akSender, ObjectRe
 EndEvent
 
 Function AddPowerAV(ObjectReference akPlotRef, ObjectReference akWorkshopRef)
-    ;Debug.TraceUser(sLogName, "AddPowerAV()")
-    ;Debug.TraceUser(sLogName, "  akSender: "+akPlotRef)
-    ;Debug.TraceUser(sLogName, "  akPlot: "+akWorkshopRef)
+    Debug.TraceUser(sLogName, "AddPowerAV()")
+    Debug.TraceUser(sLogName, "  akSender: "+akPlotRef)
+    Debug.TraceUser(sLogName, "  akPlot: "+akWorkshopRef)
     if !IsPowerGridToolsRunning(akWorkshopRef) ; f4se plugin not available
-        ;Debug.TraceUser(sLogName, " Failed F4SE plugin check")
+        Debug.TraceUser(sLogName, " Failed F4SE plugin check")
         return
     endIf
     if !akPlotRef.HasKeyword(SS2_PlotSize_Int) || !akPlotRef.HasKeyword(SS2_Tag_Plot) ; object is not interior plot
-        ;Debug.TraceUser(sLogName, " Failed keyword check")
+        Debug.TraceUser(sLogName, " Failed keyword check")
         return
     endIf
     if VTT2_Settings_EnableInteriorSnapPower.GetValue() != 1.0 ; setting not enabled
-        ;Debug.TraceUser(sLogName, " Failed setting check")
+        Debug.TraceUser(sLogName, " Failed setting check")
         return
     endIf
     if akPlotRef.GetValue(WorkshopSnapTransmitsPower) == 1.0 ; object already has av
-        ;Debug.TraceUser(sLogName, " Failed AV check")
+        Debug.TraceUser(sLogName, " Failed AV check")
         return
     endIf
     akPlotRef.SetValue(WorkshopSnapTransmitsPower, 1)
