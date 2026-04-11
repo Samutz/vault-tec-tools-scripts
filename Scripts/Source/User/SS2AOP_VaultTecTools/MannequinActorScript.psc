@@ -4,20 +4,15 @@ bool Property bSetHeadtracking = true Auto Const
 
 bool bEnabled = false
 
+Event OnLoad()
+    ; replaced in 3.1 with furniture mannequins
+    Cleanup()
+EndEvent
+
 Function Enable(bool abFade = false)
-	Parent.Enable(abFade)
-	CallFunctionNoWait("AsyncEnable", none)
 EndFunction
 
 Function AsyncEnable()
-    if !bEnabled
-        bEnabled = true
-
-        SetHeadTracking(bSetHeadtracking)
-        SetRestrained(true)
-        BlockActivation(true, false)
-        SetGhost(true)
-    endIf
 EndFunction
 
 Function Cleanup()
