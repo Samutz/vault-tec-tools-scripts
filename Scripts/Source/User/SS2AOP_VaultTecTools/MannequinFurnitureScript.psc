@@ -9,12 +9,13 @@ bool bEnabled = false
 Actor akMannequin
 
 Event OnLoad()
-    if akMannequin
-        while !akMannequin.Is3DLoaded()
-            Utility.Wait(0.1)
-        endWhile
-        ResetMannequin()
-        StartTimer(3, 0)
+    if akMannequin && bEnabled
+        if akMannequin.WaitFor3DLoad()
+            ResetMannequin()
+            StartTimer(3, 0)
+        else
+            Cleanup()
+        endIf
     endIf
 EndEvent
 
@@ -51,18 +52,20 @@ Function AsyncEnable()
 
         akMannequin = SS2AOP_VaultTecTools:SamutzLibrary.PlaceRelativeToMe(Self, actorMannequin) as Actor
         akMannequin.Enable(false)
-        while !akMannequin.Is3DLoaded()
-            Utility.Wait(0.1)
-        endWhile
         
-        ResetMannequin()
-        StartTimer(3, 0)
+        if akMannequin.WaitFor3DLoad()
+            ResetMannequin()
+            StartTimer(3, 0)
+        else
+            Cleanup()
+        endIf
     endIf
 EndFunction
 
 Function Cleanup()
     akMannequin.Disable(false)
     akMannequin.Delete()
+    bEnabled = false
 EndFunction
 
 Function Delete()
