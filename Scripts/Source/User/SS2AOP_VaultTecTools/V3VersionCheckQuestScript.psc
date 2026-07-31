@@ -29,7 +29,9 @@ Function Startup()
 
     if CurrentVersionV3 == none || CurrentVersionV3.GetValue() != CurrentVersion.GetValue()
         Debug.TraceUser(LogName, "  One of the plugins is out of date")
-        VersionMismatchMessage.Show()
-        Game.QuitToMainMenu()
+        int iResponse = VersionMismatchMessage.Show()
+        if iResponse == 0
+            Game.QuitToMainMenu()
+        endIf
     endif
 EndFunction
