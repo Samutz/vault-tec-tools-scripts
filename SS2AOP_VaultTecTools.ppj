@@ -8,7 +8,7 @@
    Final="false"
 >
 	<Imports>
-		<Import>..\Vault-Tec Tools - Script Sources (Dev)\Scripts\Source\User</Import>
+		<Import>.\Scripts\Source\User</Import>
 		<Import>..\SS2 Script Sources (Dev)\Scripts\Source\User</Import>
 		<Import>..\WSFW Script Sources (Dev)\Scripts\Source\User</Import>
 		<Import>..\..\Stock Game\data\Scripts\Source\Base</Import>
